@@ -1663,6 +1663,23 @@ a:hover {
     /* height: 100px; */
 }
 
+/* 简易振假名布局：在单词上方显示一行小号读音 */
+#question-word .word-with-furigana {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.1;
+}
+#question-word .word-with-furigana .furigana {
+    font-size: 0.42em;
+    color: #a56a4c;
+    margin-bottom: 4px;
+}
+#question-word .word-with-furigana .kanji {
+    font-size: 1em; /* 继承父级 .word 的字号 */
+}
+
 .tts-button {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.9));
     border: 1px solid rgba(255, 255, 255, 0.4);

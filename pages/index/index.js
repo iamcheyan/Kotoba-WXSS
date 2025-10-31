@@ -26,6 +26,16 @@ Page({
 
   onLoad() {
     this.initDictionaries();
+    this.audioContext = null;
+  },
+
+  onUnload() {
+    // 页面卸载时清理音频实例
+    if (this.audioContext) {
+      this.audioContext.stop();
+      this.audioContext.destroy();
+      this.audioContext = null;
+    }
   },
 
   openDictionaryModal() {
@@ -90,7 +100,16 @@ Page({
 
     this.currentEntries = [];
     if (dictObj && typeof dictObj === 'object') {
-      this.currentEntries = Object.keys(dictObj).map(function(k){ return [k, String(dictObj[k])]; });
+      // 支持两种结构：
+      // 1) 纯映射：word -> meaning
+      // 2) 带振假名：word -> { meaning, reading, runs }
+      this.currentEntries = Object.keys(dictObj).map(function(k){
+        var v = dictObj[k];
+        if (v && typeof v === 'object' && (v.meaning || v.reading || v.runs)) {
+          return { word: k, meaning: String(v.meaning || ''), reading: String(v.reading || ''), runs: Array.isArray(v.runs) ? v.runs : [] };
+        }
+        return { word: k, meaning: String(v), reading: '', runs: [] };
+      });
     }
 
     // fallback：若无法读取本地词典，用内置少量示例保证功能可用
@@ -141,12 +160,13 @@ Page({
       });
       return;
     }
-    const word = entry[0];
-    const meaning = String(entry[1] || '');
+    var word = entry.word || entry[0];
+    var meaning = String((entry.meaning != null ? entry.meaning : (entry[1] || '')));
+    var reading = String(entry.reading || '');
     this.setData({
       questionWord: word,
       questionMeaning: meaning,
-      questionReading: '',
+      questionReading: reading,
       questionRomaji: ''
     });
   },
@@ -154,5 +174,66 @@ Page({
   onSubmitAnswer() {
     // 先简单跳过校验，直接出下一题
     this.nextQuestion();
+  },
+
+  playTTS() {
+    const word = this.data.questionWord;
+    const reading = this.data.questionReading;
+    const textToSpeak = reading || word;
+    
+    if (!textToSpeak) {
+      wx.showToast({ title: '読み上げる内容がありません', icon: 'none' });
+      return;
+    }
+
+    // 微信小程序没有原生TTS，使用第三方服务
+    // 方案1: Google TTS（免费但可能不稳定）
+    // 方案2: 百度/科大讯飞等TTS服务（需要后端API）
+    // 方案3: 使用预录音频文件（最佳性能，但需要预先准备）
+    
+    // 当前实现：使用 Google TTS
+    // 注意：需要在小程序后台配置 request 合法域名 translate.google.com
+    // 或在开发时设置 project.config.json 中 checkSiteDomain: false
+    const ttsUrl = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=ja&client=tw-ob&q=' + encodeURIComponent(textToSpeak);
+    
+    // 如果已有音频实例，先停止
+    if (this.audioContext) {
+      this.audioContext.stop();
+      this.audioContext.destroy();
+    }
+
+    // 创建音频上下文
+    this.audioContext = wx.createInnerAudioContext();
+    this.audioContext.src = ttsUrl;
+    this.audioContext.volume = 1;
+    
+    // 播放速度（如果支持）
+    if (this.data.speechRate && this.audioContext.playbackRate !== undefined) {
+      this.audioContext.playbackRate = this.data.speechRate;
+    }
+
+    this.audioContext.onPlay(() => {
+      console.log('[TTS] 开始播放:', textToSpeak);
+    });
+
+    this.audioContext.onError((err) => {
+      console.error('[TTS] 播放错误:', err);
+      // Google TTS 可能被限制，提示用户
+      wx.showToast({ 
+        title: '音声再生に失敗しました。ネットワークを確認してください', 
+        icon: 'none',
+        duration: 2000
+      });
+    });
+
+    this.audioContext.onEnded(() => {
+      console.log('[TTS] 播放结束');
+      if (this.audioContext) {
+        this.audioContext.destroy();
+        this.audioContext = null;
+      }
+    });
+
+    this.audioContext.play();
   }
 });

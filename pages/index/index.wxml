@@ -226,8 +226,13 @@
 
             <view id="question" class="card game-card">
                 <view class="word-container">
-                    <view id="question-word" class="word" aria-live="polite">{{questionWord}}</view>
-                    <button id="tts-button" type="button" class="tts-button" title="発音を聞く" aria-label="発音を聞く">
+                    <view id="question-word" class="word" aria-live="polite">
+                        <view class="word-with-furigana">
+                            <text class="furigana" wx:if="{{questionReading}}">{{questionReading}}</text>
+                            <text class="kanji">{{questionWord}}</text>
+                        </view>
+                    </view>
+                    <button id="tts-button" type="button" class="tts-button" title="発音を聞く" aria-label="発音を聞く" bindtap="playTTS">
                         <image class="tts-icon" src="../../static/icons/tts.png" style="width:18px;height:18px" />
                         <text class="sr-only">発音を聞く</text>
                     </button>
@@ -245,7 +250,7 @@
                     
                     <view id="input-mode-container" class="mode-container">
                         <label class="sr-only" for="answer-input">答えを入力してください</label>
-                        <input id="answer-input" type="text" inputmode="text" autocomplete="off" placeholder="" />
+                        <input id="answer-input" type="text" inputmode="text" autocomplete="off" placeholder="" bindinput="onAnswerInput" value="{{answerText}}" />
                     </view>
                     
                     
