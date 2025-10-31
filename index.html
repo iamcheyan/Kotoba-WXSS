@@ -1,0 +1,2641 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>言葉 | Kotoba Vocabulary Trainer</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/static/logo.svg?v=1">
+    <link rel="apple-touch-icon" href="/static/icon-192.png">
+    
+    <!-- iOS Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="言葉">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#667eea">
+    
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/keyboard.css">
+    <script>
+        (function () {
+            function prepareModuleEnv() {
+                window.module = { exports: {} };
+                window.exports = window.module.exports;
+            }
+
+            window.__captureModule = function (target) {
+                if (!window.module || !window.module.exports) {
+                    return;
+                }
+                const exported = window.module.exports;
+                const ctor = exported && (exported.default || exported[target] || exported);
+                if (ctor) {
+                    window[target] = ctor;
+                }
+                prepareModuleEnv();
+            };
+
+            if (typeof window.require === 'undefined') {
+                window.require = function (name) {
+                    if (name === 'kuromoji') {
+                        return window.kuromoji;
+                    }
+                    return null;
+                };
+            }
+
+            prepareModuleEnv();
+        })();
+    </script>
+    <script defer src="/static/vendor/kuromoji/kuromoji.js"></script>
+    <script defer src="/static/vendor/kuroshiro/kuroshiro.min.js" onload="window.__captureModule('Kuroshiro')"></script>
+    <script defer src="/static/vendor/kuroshiro-analyzer-kuromoji/kuroshiro-analyzer-kuromoji.min.js" onload="window.__captureModule('KuromojiAnalyzer')"></script>
+    <script defer src="/static/vendor/wanakana/wanakana.min.js" onload="window.__captureModule('wanakana')"></script>
+    <script>
+        window.addEventListener('load', function () {
+            delete window.module;
+            delete window.exports;
+            delete window.require;
+            delete window.__captureModule;
+        });
+    </script>
+    <script defer src="/static/app.js"></script>
+</head>
+<body>
+    <div class="app">
+        <header class="app-header">
+            <div class="header-left">
+                <div class="branding">
+                    <span class="branding-logo" aria-hidden="true">
+                        <img src="/static/logo.svg" alt="Kotoba" width="42" height="42">
+                    </span>
+                    <a href="/" class="branding-title">言葉</a>
+                </div>
+            </div>
+            <!-- header-resources removed per request -->
+            <div class="header-actions">
+                <button id="autoPronounceBtn" class="ghost-button" title="自動発音（クリックで切替）" aria-pressed="false" aria-label="自動発音">
+                    自動発音
+                </button>
+                <button id="keyboard-toggle" class="ghost-button" type="button" title="Virtual Keyboard" aria-label="虚拟键盘">
+                    あ
+                </button>
+                <!-- 模式切换器 -->
+                <div class="mode-switcher">
+                    <button id="mode-input" class="mode-btn active" title="入力モード">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </button>
+                    <button id="mode-puzzle" class="mode-btn" title="パズルモード">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.968-.925a2.501 2.501 0 1 0-3.214 3.214c.446.166.855.497.925.968a.979.979 0 0 1-.276.837l-1.61 1.61a2.404 2.404 0 0 1-1.705.707 2.402 2.402 0 0 1-1.704-.706l-1.568-1.568a1.026 1.026 0 0 0-.877-.29c-.493.074-.84.504-1.02.968a2.5 2.5 0 1 1-3.237-3.237c.464-.18.894-.527.967-1.02a1.026 1.026 0 0 0-.289-.877l-1.568-1.568A2.402 2.402 0 0 1 1.998 12c0-.617.236-1.234.706-1.704L4.23 8.77c.24-.24.581-.353.917-.303.515.077.877.528 1.073 1.01a2.5 2.5 0 1 0 3.259-3.259c-.482-.196-.933-.558-1.01-1.073-.05-.336.062-.676.303-.917l1.525-1.525A2.402 2.402 0 0 1 12 1.998c.617 0 1.234.236 1.704.706l1.568 1.568c.23.23.556.338.877.29.493-.074.84-.504 1.02-.968a2.5 2.5 0 1 1 3.237 3.237c-.464.18-.894.527-.967 1.02z"></path>
+                        </svg>
+                    </button>
+                    <button id="mode-play" class="mode-btn" title="再生モード" style="display: none;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                    </button>
+                </div>
+                <!-- 排行榜入口按钮（放在 user-account 右侧） -->
+                <button id="headerLeaderboardBtn" class="header-leaderboard-btn" title="ランキング" style="display:none;">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M8 21h8"/>
+                        <path d="M12 17v4"/>
+                        <path d="M7 4h10v5l-5 3-5-3V4z"/>
+                        <path d="M5 9H4a2 2 0 0 1-2-2V5h3"/>
+                        <path d="M19 9h1a2 2 0 0 0 2-2V5h-3"/>
+                    </svg>
+                </button>
+
+                <!-- 用户账户 -->
+                <div class="user-account">
+                    <!-- 未登录菜单触发器 -->
+                    <div id="guestProfile" class="user-profile" style="display: flex;">
+                        <button class="guest-menu-trigger" aria-label="メニュー">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </button>
+                        <div id="guestMenu" class="user-menu">
+                            <button id="loginButtonMenu" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                                </svg>
+                                <span>ログイン</span>
+                            </button>
+                            <div class="user-menu-divider"></div>
+                            <button id="dictionaryButtonMenuGuest" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                    <line x1="10" y1="8" x2="16" y2="8"></line>
+                                    <line x1="10" y1="12" x2="16" y2="12"></line>
+                                    <line x1="10" y1="16" x2="14" y2="16"></line>
+                                </svg>
+                                <span>辞書を切り替え</span>
+                            </button>
+                            <button id="settingsButtonMenuGuest" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"></path>
+                                </svg>
+                                <span>設定</span>
+                            </button>
+                            <button id="clearEnvButtonGuest" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 6h18"></path>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                <span>環境をクリア</span>
+                            </button>
+                            <button id="downloadOfflineGuest" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <span>オフライン用にダウンロード</span>
+                            </button>
+                            <div class="user-menu-divider"></div>
+                            <a id="helpLinkUser" class="user-menu-item" href="/help.html" target="_blank">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M9 9a3 3 0 1 1 5.2 2.2c-.7.7-1.2 1.1-1.2 2.3"></path>
+                                    <line x1="12" y1="17" x2="12" y2="17"></line>
+                                </svg>
+                                <span>ヘルプ</span>
+                            </a>
+                            <button id="installPWAGuest" class="user-menu-item" style="display: none;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <span>アプリをインストール</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- 已登录用户资料 -->
+                    <div id="userProfile" class="user-profile" style="display: none;">
+                        <img id="userAvatar" class="user-avatar" src="" alt="User">
+                        <div id="userMenu" class="user-menu">
+                            <div class="user-menu-header">
+                                <img id="userAvatarMenu" class="user-avatar-large" src="" alt="User">
+                                <div class="user-info">
+                                    <div id="userNameMenu" class="user-name"></div>
+                                    <div id="userEmailMenu" class="user-email"></div>
+                                </div>
+                            </div>
+                            <div class="user-menu-divider"></div>
+                            <button id="syncDataButton" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                </svg>
+                                <span>データを同期</span>
+                            </button>
+                            <button id="viewWrongWordsButton" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span>統計</span>
+                            </button>
+                            <button id="practiceWrongWordsButton" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                                </svg>
+                                <span>錯題を練習</span>
+                            </button>
+                            
+                            <div class="user-menu-divider"></div>
+                            <button id="dictionaryButtonMenu" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                    <line x1="10" y1="8" x2="16" y2="8"></line>
+                                    <line x1="10" y1="12" x2="16" y2="12"></line>
+                                    <line x1="10" y1="16" x2="14" y2="16"></line>
+                                </svg>
+                                <span>辞書を切り替え</span>
+                            </button>
+                            <button id="settingsButtonMenu" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"></path>
+                                </svg>
+                                <span>設定</span>
+                            </button>
+                            <button id="clearEnvButton" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 6h18"></path>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                <span>環境をクリア</span>
+                            </button>
+                            <button id="downloadOfflineUser" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <span>オフライン用にダウンロード</span>
+                            </button>
+                            <div class="user-menu-divider"></div>
+                            <button id="switchAccountButton" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                                <span>アカウントを切り替え</span>
+                            </button>
+                            <button id="logoutButton" class="user-menu-item logout">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                <span>ログアウト</span>
+                            </button>
+                            <div class="user-menu-divider"></div>
+                            <a id="helpLinkUser" class="user-menu-item" href="/help.html" target="_blank">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M9 9a3 3 0 1 1 5.2 2.2c-.7.7-1.2 1.1-1.2 2.3"></path>
+                                    <line x1="12" y1="17" x2="12" y2="17"></line>
+                                </svg>
+                                <span>ヘルプ</span>
+                            </a>
+                            <button id="installPWAUser" class="user-menu-item" style="display: none;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <span>アプリをインストール</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                
+            </div>
+        </header>
+
+        <main class="main">
+            <div id="loading-indicator" class="loading hidden" role="status" aria-live="polite">
+                <div class="spinner" aria-hidden="true"></div>
+                <p class="loading-text">読み込み中…</p>
+            </div>
+
+            <section id="question" class="card game-card">
+                <div class="word-container">
+                    <h1 id="question-word" class="word" aria-live="polite"></h1>
+                    <button id="tts-button" type="button" class="tts-button" title="発音を聞く" aria-label="発音を聞く">
+                        <svg class="tts-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path d="M4 9v6h3.5L12 18V6L7.5 9H4z"></path>
+                            <path d="M16 12a2 2 0 01-1.17 1.83l-.33.12v-3.9l.33.12A2 2 0 0116 12z"></path>
+                            <path d="M18.5 12a4.5 4.5 0 01-3.05 4.24l-.45.15v-1.66l.18-.08A2.9 2.9 0 0017 12a2.9 2.9 0 00-1.82-2.65l-.18-.07V7.62l.45.15A4.5 4.5 0 0118.5 12z"></path>
+                        </svg>
+                        <span class="sr-only">発音を聞く</span>
+                    </button>
+                </div>
+                <p id="question-meaning" class="meaning"></p>
+                <p id="question-reading" class="reading"></p>
+                <div class="romaji-line"><p id="question-romaji" class="romaji"></p><a href="/help.html#romaji" target="_blank" title="Romaji Help" aria-label="Romaji Help" class="romaji-help">?</a></div>
+                <div id="empty-wrong-words" class="empty-state hidden" aria-live="polite">
+                    <div class="empty-illustration" aria-hidden="true">🫧</div>
+                    <h3>まだ間違いがありません</h3>
+                    <p>現在の錯題本は空です。まずは通常の辞書で練習してみましょう。</p>
+                    <button id="backToDefaultDict" class="primary-button" type="button">既定の辞書へ</button>
+                </div>
+                <form id="answer-form" class="answer-form" autocomplete="off">
+                    <!-- 输入模式 -->
+                    <div id="input-mode-container" class="mode-container">
+                        <label class="sr-only" for="answer-input">答えを入力してください</label>
+                        <input id="answer-input" type="text" inputmode="text" autocomplete="off" placeholder="">
+                    </div>
+                    
+                    <!-- 拼词模式 -->
+                    <div id="puzzle-mode-container" class="mode-container hidden">
+                        <div id="puzzle-answer-area" class="puzzle-answer-area">
+                            <!-- 用户选择的字符会显示在这里 -->
+                        </div>
+                        <div id="puzzle-options-area" class="puzzle-options-area">
+                            <!-- 打乱的假名方块会显示在这里 -->
+                        </div>
+                    </div>
+                    
+                    <div class="actions">
+                        <button type="submit" id="answer-submit">答える</button>
+                        <button type="button" id="skip-button" class="skip-button" title="この問題をスキップ">スキップ</button>
+                        <button type="button" id="replay-button" class="hidden">重听</button>
+                        <button type="button" id="next-button" class="hidden">次へ</button>
+                    </div>
+                </form>
+            </section>
+            <!-- 游戏化进度面板 -->
+            <section class="game-progress-panel" aria-label="学習進捗" style="display: none;">
+                <div class="player-stats">
+                    <div class="player-avatar">
+                        <div class="avatar-ring level-1">
+                            <div class="avatar-icon" id="game-avatar-container">
+                                <img id="gameUserAvatar" class="game-user-avatar hidden" src="" alt="User">
+                                <span id="gameDefaultAvatar" class="game-default-avatar">⚔️</span>
+                            </div>
+                        </div>
+                        <div class="level-badge" id="level-badge">Lv.1</div>
+                    </div>
+                    
+                    <div class="player-info">
+                        <div class="exp-container">
+                            <div class="exp-header">
+                                <span class="exp-label">経験値</span>
+                                <button id="progress-reset" class="progress-reset-btn" type="button" title="進捗をリセット">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                                        <path d="M3 3v5h5"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="exp-bar-wrapper">
+                                <div id="exp-bar" class="exp-bar" role="progressbar">
+                                    <div id="exp-fill" class="exp-bar-fill"></div>
+                                    <div class="exp-bar-shine"></div>
+                                </div>
+                                <div class="exp-text" id="exp-text">0 / 100</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item stat-correct">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                                <span class="stat-value" id="correct-stat">0</span>
+                            </div>
+                            <div class="stat-item stat-wrong">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                                </svg>
+                                <span class="stat-value" id="wrong-stat">0</span>
+                            </div>
+                            <div class="stat-item stat-combo">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                                </svg>
+                                <span class="stat-value" id="combo-stat">0</span>
+                            </div>
+                            <div class="stat-item stat-total">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                                <span class="stat-value" id="total-stat">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="progress-text-info" id="progress-text-info">
+                    <span id="progress-fraction">0 / 0</span>
+                    <span class="progress-percentage" id="progress-percentage">0%</span>
+                    <span id="dictionary-name" class="dictionary-name"></span>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            © <a href="https://iamcheyan.com/" target="_blank" rel="noreferrer noopener">Cheyan</a> All Rights Reserved ·
+            <a href="https://github.com/iamcheyan/terebi" target="_blank" rel="noreferrer noopener" class="footer-link" aria-label="GitHub" title="GitHub">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.42c.58.11.8-.25.8-.56v-2.02c-3.26.71-3.95-1.4-3.95-1.4-.53-1.36-1.3-1.72-1.3-1.72-1.06-.72.08-.71.08-.71 1.18.08 1.8 1.21 1.8 1.21 1.04 1.79 2.73 1.27 3.4.97.11-.76.41-1.27.75-1.56-2.6-.3-5.33-1.3-5.33-5.8 0-1.28.46-2.32 1.21-3.14-.12-.3-.52-1.52.11-3.17 0 0 .98-.31 3.2 1.2.94-.26 1.95-.39 2.95-.39s2.01.13 2.95.39c2.22-1.51 3.19-1.2 3.19-1.2.64 1.65.24 2.87.12 3.17.76.82 1.21 1.86 1.21 3.14 0 4.51-2.73 5.5-5.34 5.79.42.36.8 1.08.8 2.18v3.23c0 .31.21.68.81.56A11.5 11.5 0 0 0 12 .5Z"></path></svg>
+                <span class="footer-link-label">GitHub</span>
+            </a>
+        </footer>
+    </div>
+
+    <!-- 全局alerts容器 -->
+    <section id="alerts" class="alerts" aria-live="polite"></section>
+
+    <div id="modal-backdrop" class="modal-backdrop hidden" data-close="modal"></div>
+
+    <div id="dictionary-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="dictionary-modal-title">
+        <div class="modal-header">
+            <h2 id="dictionary-modal-title">辞書選択</h2>
+            <button type="button" class="modal-close" data-close="modal" aria-label="閉じる">×</button>
+        </div>
+        <div class="modal-body dictionary-modal-body">
+            <div class="dictionary-select-group">
+                <label for="dictionary-select">利用する辞書を選択</label>
+                <select id="dictionary-select"></select>
+            </div>
+            <div class="voice-selection">
+                <label for="voice-select">音声選択:</label>
+                <select id="voice-select">
+                    <option value="">読み込み中...</option>
+                </select>
+                <button type="button" id="voice-preview" class="ghost-button" title="選択中の音声で試聴します" aria-label="音声を試聴">▶︎ 試聴</button>
+            </div>
+            <div class="rate-control">
+                <label for="rate-slider">読み上げ速度:</label>
+                <div class="rate-control__track">
+                    <input id="rate-slider" type="range" min="0.5" max="2" step="0.1" value="1" />
+                    <span id="rate-value">1.0x</span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="ghost-button" data-close="modal">キャンセル</button>
+            <button type="button" id="dictionary-save">確認</button>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+        <div class="modal-header">
+            <h2 id="settings-modal-title">設定</h2>
+            <button type="button" class="modal-close" data-close="modal" aria-label="閉じる">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="settings-checkbox-grid">
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-reading" checked>
+                    読み方を表示する
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-romaji" checked>
+                    ローマ字を表示する
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-placeholder" checked>
+                    入力ヒントを表示する
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-katakana">
+                    カタカナにも振り仮名を表示する
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-furigana" checked>
+                    振り仮名を表示する
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-auto-pronunciation">
+                    自動発音
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-combo-sound" checked>
+                    連撃音效
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-sound-effects" checked>
+                    効果音（正解/報酬）
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-haptics" checked>
+                    触感（対応デバイス）
+                </label>
+                <div class="sound-test-section" style="display: none;">
+                    <button type="button" id="test-combo-sound" class="ghost-button">
+                        🔊 音效テスト
+                    </button>
+                    <div class="combo-sound-tests">
+                        <h4>連撃音效テスト</h4>
+                        <div class="combo-test-buttons">
+                            <button type="button" class="combo-test-btn" data-combo="3">3連撃 🔥</button>
+                            <button type="button" class="combo-test-btn" data-combo="5">5連撃 ✨</button>
+                            <button type="button" class="combo-test-btn" data-combo="10">10連撃 🎉</button>
+                            <button type="button" class="combo-test-btn" data-combo="20">20連撃 🌟</button>
+                            <button type="button" class="combo-test-btn" data-combo="30">30連撃 🦄</button>
+                            <button type="button" class="combo-test-btn" data-combo="50">50連撃 🏆</button>
+                            <button type="button" class="combo-test-btn" data-combo="60">60連撃 🏆</button>
+                            <button type="button" class="combo-test-btn" data-combo="70">70連撃 🏆</button>
+                            <button type="button" class="combo-test-btn" data-combo="80">80連撃 🏆</button>
+                            <button type="button" class="combo-test-btn" data-combo="90">90連撃 🏆</button>
+                            <button type="button" class="combo-test-btn" data-combo="100">100連撃 👑</button>
+                            <button type="button" class="combo-test-btn" data-combo="200">200連撃 💎</button>
+                            <button type="button" class="combo-test-btn" data-combo="300">300連撃 🚀</button>
+                            <button type="button" class="combo-test-btn" data-combo="500">500連撃 🌌</button>
+                            <button type="button" class="combo-test-btn" data-combo="1000">1000連撃 🧙‍♂️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="ghost-button" data-close="modal">キャンセル</button>
+            <button type="button" id="settings-save">確認</button>
+        </div>
+    </div>
+
+    <!-- 错题本查看面板 -->
+    <div id="wrong-words-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="wrong-words-modal-title">
+        <div class="modal-header">
+            <h2 id="wrong-words-modal-title">統計</h2>
+            <button type="button" class="modal-close" data-close="modal" aria-label="閉じる">×</button>
+        </div>
+        <div class="modal-body wrong-words-body">
+            <div class="wrong-words-stats">
+                <div class="stat-card stat-correct">
+                    <div class="stat-number" id="correct-count">0</div>
+                    <div class="stat-label">正解数</div>
+                </div>
+                <div class="stat-card stat-wrong">
+                    <div class="stat-number" id="wrong-count">0</div>
+                    <div class="stat-label">錯題数</div>
+                </div>
+            </div>
+            <div class="wrong-words-actions">
+                <button type="button" id="practice-wrong-words" class="ghost-button primary-button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    錯題を練習
+                </button>
+                <button type="button" id="clear-all-wrong-words" class="ghost-button danger-button" title="すべてクリア">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="wrong-words-list" class="wrong-words-list">
+                <!-- 错题列表将在这里显示 -->
+            </div>
+            <div id="wrong-words-pagination" class="pagination hidden">
+                <button id="prev-page" class="pagination-btn" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    前へ
+                </button>
+                <div class="pagination-info">
+                    <span id="current-page">1</span> / <span id="total-pages">1</span>
+                </div>
+                <button id="next-page" class="pagination-btn" disabled>
+                    次へ
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offline Download Modal -->
+    <div id="offline-download-modal" class="modal hidden" role="dialog" aria-modal="true">
+        <div class="modal-header">
+            <h2>オフライン使用</h2>
+            <button type="button" class="modal-close" data-close="offline-modal" aria-label="閉じる">×</button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size: 14px; color: var(--text-secondary, #64748b); margin-bottom: 16px;">
+                すべてのリソースをダウンロードして、完全にオフラインで使用できるようにします。
+            </p>
+            <div id="offline-status" style="margin: 16px 0; font-size: 14px; text-align: center; min-height: 24px;">
+                <!-- Status will be shown here -->
+            </div>
+            <button type="button" id="download-for-offline" class="ghost-button" style="width: 100%; margin-top: 8px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                オフライン用にダウンロード
+            </button>
+        </div>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div id="leaderboard-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="leaderboard-modal-title">
+                <div class="modal-header">
+            <h2 id="leaderboard-modal-title">ランキング</h2>
+            <button type="button" class="modal-close" data-close="modal" aria-label="閉じる">×</button>
+        </div>
+        <div class="modal-body leaderboard-body">
+            <div class="leaderboard-stats">
+                <div class="leaderboard-stat-card">
+                    <div class="stat-number" id="my-rank">-</div>
+                    <div class="stat-label">自分の順位</div>
+                </div>
+                <div class="leaderboard-stat-card">
+                    <div class="stat-number" id="my-score">0</div>
+                    <div class="stat-label">自分のスコア</div>
+                </div>
+                <div class="leaderboard-stat-card">
+                    <div class="stat-number" id="total-players">0</div>
+                    <div class="stat-label">プレイヤー数</div>
+                </div>
+            </div>
+            
+            <div class="leaderboard-actions" style="display:none;"></div>
+            
+            <div class="leaderboard-list" id="leaderboard-list">
+                <div class="leaderboard-loading">
+                    <div class="spinner" style="width: 24px; height: 24px; margin: 0 auto;"></div>
+                    <p>読み込み中...</p>
+                </div>
+            </div>
+            <div style="margin-top: 8px; text-align: right;">
+                <button type="button" id="show-scoring-rules" class="ghost-button" title="計算ルール">計算ルール</button>
+            </div>
+            
+            <div class="leaderboard-pagination" id="leaderboard-pagination" style="display: none;">
+                <button id="prev-leaderboard-page" class="pagination-btn" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    前へ
+                </button>
+                <div class="pagination-info">
+                    <span id="current-leaderboard-page">1</span> / <span id="total-leaderboard-pages">1</span>
+                </div>
+                <button id="next-leaderboard-page" class="pagination-btn" disabled>
+                    次へ
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA Install Progress Modal -->
+    <div id="pwa-install-modal" class="modal hidden" role="dialog" aria-modal="true">
+        <div class="modal-header">
+            <h2>アプリをインストール</h2>
+            <button type="button" class="modal-close" data-close="pwa-modal" aria-label="閉じる">×</button>
+        </div>
+        <div class="modal-body">
+            <div id="pwa-install-content">
+                <div class="pwa-step" id="pwa-step-1">
+                    <div class="pwa-icon">📱</div>
+                    <h3>キャッシュをクリア中...</h3>
+                    <div class="pwa-progress">
+                        <div class="pwa-progress-bar" id="pwa-progress-1" style="width: 0%"></div>
+                    </div>
+                    <p class="pwa-progress-text" id="pwa-progress-text-1">準備中...</p>
+                </div>
+                <div class="pwa-step hidden" id="pwa-step-2">
+                    <div class="pwa-icon">⬇️</div>
+                    <h3>リソースをダウンロード中...</h3>
+                    <div class="pwa-progress">
+                        <div class="pwa-progress-bar" id="pwa-progress-2" style="width: 0%"></div>
+                    </div>
+                    <p class="pwa-progress-text" id="pwa-progress-text-2">0 / 0 ファイル</p>
+                </div>
+                <div class="pwa-step hidden" id="pwa-step-3">
+                    <div class="pwa-icon">✅</div>
+                    <h3>インストール完了！</h3>
+                    <p>アプリをホーム画面に追加できます</p>
+                    <button type="button" id="pwa-add-to-home" class="primary-button" style="max-width: 100%; margin-top: 16px;">
+                        ホーム画面に追加
+                    </button>
+                </div>
+                <div class="pwa-step hidden" id="pwa-step-error">
+                    <div class="pwa-icon">❌</div>
+                    <h3>インストールに失敗しました</h3>
+                    <p id="pwa-error-message"></p>
+                    <button type="button" class="ghost-button" data-close="pwa-modal" style="margin-top: 16px;">
+                        閉じる
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAOp_lGAlIBxP5pFQID_RPelmLE4NTvZ2s",
+            authDomain: "kotoba-60aeb.firebaseapp.com",
+            projectId: "kotoba-60aeb",
+            storageBucket: "kotoba-60aeb.firebasestorage.app",
+            messagingSenderId: "367445040315",
+            appId: "1:367445040315:web:1b68e59976ac2ab1f91d9e",
+            measurementId: "G-CT0R8S7TQG"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+        
+        // 强制显示账户选择界面
+        provider.setCustomParameters({
+            prompt: 'select_account'
+        });
+
+        // Make auth and db available globally
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+
+        // 简化为与 Terebi 相同的登录方式：仅使用 Popup
+
+        // UI Elements
+        const loginButton = document.getElementById('loginButton');
+        const loginButtonMenu = document.getElementById('loginButtonMenu');
+        const userProfile = document.getElementById('userProfile');
+        const guestProfile = document.getElementById('guestProfile');
+        const guestMenuTrigger = document.querySelector('.guest-menu-trigger');
+        const guestMenu = document.getElementById('guestMenu');
+        const userAvatar = document.getElementById('userAvatar');
+        const userAvatarMenu = document.getElementById('userAvatarMenu');
+        const userNameMenu = document.getElementById('userNameMenu');
+        const userEmailMenu = document.getElementById('userEmailMenu');
+        const userMenu = document.getElementById('userMenu');
+        const logoutButton = document.getElementById('logoutButton');
+        const syncDataButton = document.getElementById('syncDataButton');
+        const switchAccountButton = document.getElementById('switchAccountButton');
+        const dictionaryButtonMenuGuest = document.getElementById('dictionaryButtonMenuGuest');
+        const settingsButtonMenuGuest = document.getElementById('settingsButtonMenuGuest');
+        const clearEnvButtonGuest = document.getElementById('clearEnvButtonGuest');
+        const headerLeaderboardBtn = document.getElementById('headerLeaderboardBtn');
+        const submitScoreButton = document.getElementById('submit-score-button');
+        const refreshLeaderboardButton = document.getElementById('refresh-leaderboard');
+        const clearEnvButton = document.getElementById('clearEnvButton');
+
+        // Toggle guest menu
+        if (guestMenuTrigger) {
+            guestMenuTrigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (guestMenu) guestMenu.classList.toggle('show');
+            });
+        }
+
+        // Toggle user menu
+        if (userAvatar) {
+            userAvatar.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (userMenu) userMenu.classList.toggle('show');
+            });
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', () => {
+            if (userMenu) userMenu.classList.remove('show');
+            if (guestMenu) guestMenu.classList.remove('show');
+        });
+
+        // 统一关闭逻辑（空白遮罩/通用关闭按钮）
+        function closeAllModals() {
+            const openModalIds = [
+                'dictionary-modal',
+                'settings-modal',
+                'wrong-words-modal',
+                'offline-download-modal',
+                'pwa-install-modal',
+                'leaderboard-modal'
+            ];
+            openModalIds.forEach((id) => {
+                const el = document.getElementById(id);
+                if (el && !el.classList.contains('hidden')) {
+                    el.classList.add('hidden');
+                }
+            });
+            const backdrop = document.getElementById('modal-backdrop');
+            if (backdrop) backdrop.classList.add('hidden');
+        }
+
+        // 空白の領域クリックでモーダルを閉じる（ランキング含む）
+        const globalBackdrop = document.getElementById('modal-backdrop');
+        if (globalBackdrop) {
+            globalBackdrop.addEventListener('click', closeAllModals);
+        }
+
+        // 共通閉じるボタン（data-close="modal"）も同じロジック
+        document.querySelectorAll('[data-close="modal"]').forEach((btn) => {
+            btn.addEventListener('click', closeAllModals);
+        });
+
+        // Esc to close modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modals = ['dictionary-modal','settings-modal','wrong-words-modal','offline-download-modal','pwa-install-modal','leaderboard-modal'];
+                const backdrop = document.getElementById('modal-backdrop');
+                let closed = false;
+                modals.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && !el.classList.contains('hidden')) {
+                        el.classList.add('hidden');
+                        closed = true;
+                    }
+                });
+                if (closed && backdrop) backdrop.classList.add('hidden');
+            }
+        });
+
+        // Prevent menu from closing when clicking inside
+        if (userMenu) {
+            userMenu.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+        
+        if (guestMenu) {
+            guestMenu.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+        
+        // Guest menu actions
+        if (loginButtonMenu) {
+            loginButtonMenu.addEventListener('click', async () => {
+                try {
+                    sessionStorage.removeItem('dataLoaded');
+                    const result = await signInWithPopup(auth, provider);
+                    const user = result.user;
+                    console.log('User signed in:', user.displayName);
+                    showNotification('ログインしました', 'success');
+                    if (guestMenu) guestMenu.classList.remove('show');
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showNotification('ログインエラー: ' + error.message, 'error');
+                }
+            });
+        }
+        
+        if (dictionaryButtonMenuGuest) {
+            dictionaryButtonMenuGuest.addEventListener('click', function() {
+                const dictionaryModal = document.getElementById('dictionary-modal');
+                const backdrop = document.getElementById('modal-backdrop');
+                if (dictionaryModal) {
+                    dictionaryModal.classList.remove('hidden');
+                }
+                if (backdrop) {
+                    backdrop.classList.remove('hidden');
+                }
+                if (guestMenu) guestMenu.classList.remove('show');
+            });
+        }
+        
+        if (settingsButtonMenuGuest) {
+            settingsButtonMenuGuest.addEventListener('click', function() {
+                const settingsModal = document.getElementById('settings-modal');
+                const backdrop = document.getElementById('modal-backdrop');
+                if (settingsModal) {
+                    settingsModal.classList.remove('hidden');
+                }
+                if (backdrop) {
+                    backdrop.classList.remove('hidden');
+                }
+                if (guestMenu) guestMenu.classList.remove('show');
+            });
+        }
+
+        // Clear environment (guest)
+        if (clearEnvButtonGuest) {
+            clearEnvButtonGuest.addEventListener('click', function() {
+                if (guestMenu) guestMenu.classList.remove('show');
+                window.location.href = '/clear.html';
+            });
+        }
+
+        // Removed user-menu leaderboard button
+
+        // Header leaderboard entry
+        if (headerLeaderboardBtn) {
+            headerLeaderboardBtn.addEventListener('click', async function() {
+                // 打开前先提交当前分数，确保排行榜存的是最新数据
+                try {
+                    await submitScoreToLeaderboard({ silent: true });
+                } catch (e) { console.warn('预提交失败', e); }
+
+                const leaderboardModal = document.getElementById('leaderboard-modal');
+                const backdrop = document.getElementById('modal-backdrop');
+                if (leaderboardModal) leaderboardModal.classList.remove('hidden');
+                if (backdrop) backdrop.classList.remove('hidden');
+                if (guestMenu) guestMenu.classList.remove('show');
+                if (userMenu) userMenu.classList.remove('show');
+                await loadLeaderboard();
+            });
+        }
+
+        // Clear environment (user)
+        if (clearEnvButton) {
+            clearEnvButton.addEventListener('click', function() {
+                if (userMenu) userMenu.classList.remove('show');
+                window.location.href = '/clear.html';
+            });
+        }
+
+        // Submit score button
+        if (submitScoreButton) {
+            submitScoreButton.addEventListener('click', async function() {
+                await submitScoreToLeaderboard();
+            });
+        }
+
+        // Refresh leaderboard button
+        if (refreshLeaderboardButton) {
+            refreshLeaderboardButton.addEventListener('click', async function() {
+                await loadLeaderboard();
+            });
+        }
+
+        // Show scoring rules (日本語) - open in new tab
+        const showScoringRulesBtn = document.getElementById('show-scoring-rules');
+        if (showScoringRulesBtn) {
+            showScoringRulesBtn.addEventListener('click', () => {
+                window.open('/help.html#scoring', '_blank', 'noopener');
+            });
+        }
+
+        // cleanup-leaderboard removed
+
+        // Leaderboard pagination
+        const prevLeaderboardPage = document.getElementById('prev-leaderboard-page');
+        const nextLeaderboardPage = document.getElementById('next-leaderboard-page');
+        
+        if (prevLeaderboardPage) {
+            prevLeaderboardPage.addEventListener('click', function() {
+                if (currentLeaderboardPage > 1) {
+                    currentLeaderboardPage--;
+                    displayLeaderboard();
+                }
+            });
+        }
+        
+        if (nextLeaderboardPage) {
+            nextLeaderboardPage.addEventListener('click', function() {
+                const totalPages = Math.ceil(leaderboardData.length / leaderboardPageSize);
+                if (currentLeaderboardPage < totalPages) {
+                    currentLeaderboardPage++;
+                    displayLeaderboard();
+                }
+            });
+        }
+
+        // Login with Google
+        if (loginButton) {
+            loginButton.addEventListener('click', async () => {
+                try {
+                    sessionStorage.removeItem('dataLoaded');
+                    const result = await signInWithPopup(auth, provider);
+                    const user = result.user;
+                    console.log('User signed in:', user.displayName);
+                    showNotification('ログインしました', 'success');
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showNotification('ログインエラー: ' + error.message, 'error');
+                }
+            });
+        }
+
+        // Logout
+        if (logoutButton) {
+            logoutButton.addEventListener('click', async () => {
+                try {
+                    // 清除本地积分信息，避免账号切换时沿用
+                    (function clearLocalScore() {
+                        ['correct','wrong','combo','total'].forEach((k) => {
+                            try { localStorage.removeItem(k); } catch (_) {}
+                        });
+                        if (window.updateScoreboard) {
+                            try { window.updateScoreboard(); } catch (_) {}
+                        }
+                    })();
+
+                    await signOut(auth);
+                    console.log('User signed out');
+                    showNotification('ログアウトしました', 'success');
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    showNotification('ログアウトエラー: ' + error.message, 'error');
+                }
+            });
+        }
+
+        // Switch account
+        if (switchAccountButton) {
+            switchAccountButton.addEventListener('click', async () => {
+                try {
+                    sessionStorage.removeItem('dataLoaded');
+                    // 先清除本地积分，防止切换账户后继承
+                    ['correct','wrong','combo','total'].forEach((k) => {
+                        try { localStorage.removeItem(k); } catch (_) {}
+                    });
+                    if (window.updateScoreboard) {
+                        try { window.updateScoreboard(); } catch (_) {}
+                    }
+                    await signOut(auth);
+                    setTimeout(async () => {
+                        try {
+                            const result = await signInWithPopup(auth, provider);
+                            const user = result.user;
+                            console.log('Switched to account:', user.displayName);
+                            showNotification('アカウントを切り替えました', 'success');
+                        } catch (error) {
+                            console.error('Switch account error:', error);
+                            showNotification('切り替えエラー: ' + error.message, 'error');
+                        }
+                    }, 100);
+                } catch (error) {
+                    console.error('Logout error during switch:', error);
+                }
+            });
+        }
+
+        // Sync data to Firestore
+        async function syncUserData(user) {
+            if (!user) return;
+
+            try {
+                const userRef = doc(db, 'users', user.uid);
+                
+                const localData = {
+                    // 学习进度
+                    correct: parseInt(localStorage.getItem('correct') || '0', 10),
+                    wrong: parseInt(localStorage.getItem('wrong') || '0', 10),
+                    
+                    // 游戏化数据
+                    combo: parseInt(localStorage.getItem('combo') || '0', 10),
+                    total: parseInt(localStorage.getItem('total') || '0', 10),
+                    
+                    // 仅上报计数，避免超出 1MB 文档限制
+                    masteredCount: (() => { try { return Object.keys(JSON.parse(localStorage.getItem('masteredEntries') || '{}')).length; } catch { return 0; } })(),
+                    wrongWordsCount: (() => { try { return (JSON.parse(localStorage.getItem('wrongWords') || '[]') || []).length; } catch { return 0; } })(),
+                    
+                    // 用户偏好
+                    lastSelectedDictionary: localStorage.getItem('lastSelectedDictionary'),
+                    selectedVoice: localStorage.getItem('selectedVoice'),
+                    speechRate: localStorage.getItem('speechRate'),
+                    theme: localStorage.getItem('kotoba.theme'),
+                    answerMode: localStorage.getItem('answerMode') || 'input',
+                    
+                    // 同步时间
+                    lastSync: new Date().toISOString(),
+                    
+                    // 用户信息
+                    email: user.email,
+                    displayName: user.displayName,
+                    photoURL: user.photoURL
+                };
+
+                await setDoc(userRef, localData, { merge: true });
+                    console.log('✅ クラウドへ同期しました');
+                    console.log('📊 同期データ:', {
+                        正解: localData.correct,
+                        誤答: localData.wrong,
+                        連撃: localData.combo,
+                        総問題数: localData.total,
+                        習得済み: localData.masteredCount,
+                        錯題本: localData.wrongWordsCount
+                    });
+
+                // 同步成功后也轻量更新排行榜（静默）
+                try {
+                    await submitScoreToLeaderboard({ silent: true });
+                } catch (e) {
+                    console.warn('静默更新排行榜失败:', e);
+                }
+            } catch (error) {
+                console.error('❌ 同步数据失败:', error);
+                throw error;
+            }
+        }
+
+        // Load user data from Firestore
+        async function loadUserData(user, options = {}) {
+            if (!user) return;
+            
+            const { silent = false } = options;
+
+            try {
+                const userRef = doc(db, 'users', user.uid);
+                const userDoc = await getDoc(userRef);
+
+                if (userDoc.exists()) {
+                    const cloudData = userDoc.data();
+                    console.log('📥 正在从云端加载数据...');
+                    
+                    // 同步学习进度
+                    if (cloudData.correct !== undefined) {
+                        localStorage.setItem('correct', String(cloudData.correct));
+                    }
+                    if (cloudData.wrong !== undefined) {
+                        localStorage.setItem('wrong', String(cloudData.wrong));
+                    }
+                    
+                    // 同步游戏化数据
+                    if (cloudData.combo !== undefined) {
+                        localStorage.setItem('combo', String(cloudData.combo));
+                    }
+                    if (cloudData.total !== undefined) {
+                        localStorage.setItem('total', String(cloudData.total));
+                    }
+                    
+                    // 不再从云端覆盖 masteredEntries 具体列表（避免大对象），仅保留本地
+                    
+                    // 同步错题本 - 合并去重
+                    // 不再从云端同步 wrongWords 列表，避免膨胀；仍可使用计数
+                    
+                    // 同步用户偏好
+                    if (cloudData.lastSelectedDictionary) {
+                        localStorage.setItem('lastSelectedDictionary', cloudData.lastSelectedDictionary);
+                    }
+                    if (cloudData.selectedVoice) {
+                        localStorage.setItem('selectedVoice', cloudData.selectedVoice);
+                    }
+                    if (cloudData.speechRate) {
+                        localStorage.setItem('speechRate', cloudData.speechRate);
+                    }
+                    if (cloudData.theme) {
+                        localStorage.setItem('kotoba.theme', cloudData.theme);
+                    }
+                    if (cloudData.answerMode) {
+                        localStorage.setItem('answerMode', cloudData.answerMode);
+                    }
+
+                    console.log('🎉 数据加载完成！');
+                    console.log('📊 加载的数据:', {
+                        正确: cloudData.correct,
+                        错误: cloudData.wrong,
+                        连击: cloudData.combo,
+                        总题数: cloudData.total,
+                        已掌握: cloudData.masteredEntries ? Object.keys(cloudData.masteredEntries).length : 0,
+                        错题本: cloudData.wrongWords ? cloudData.wrongWords.length : 0
+                    });
+                    sessionStorage.setItem('dataLoaded', 'true');
+                    
+                    if (!silent) {
+                        showNotification('データを読み込みました', 'success');
+                    }
+                    
+                    // 刷新界面
+                    if (window.updateScoreboard) {
+                        window.updateScoreboard();
+                    }
+                } else {
+                    // 首次登录，上传本地数据
+                    console.log('📤 首次登录，正在上传本地数据...');
+                    await syncUserData(user);
+                    sessionStorage.setItem('dataLoaded', 'true');
+                }
+            } catch (error) {
+                console.error('❌ 加载数据失败:', error);
+            }
+        }
+
+        // Sync data button
+        if (syncDataButton) {
+            syncDataButton.addEventListener('click', async () => {
+                const user = auth.currentUser;
+                if (user) {
+                    try {
+                        console.log('🔄 开始同步...');
+                        await loadUserData(user, { silent: true });
+                        await syncUserData(user);
+                        showNotification('データを同期しました', 'success');
+                        
+                        // 刷新界面
+                        if (window.updateScoreboard) {
+                            window.updateScoreboard();
+                        }
+                        console.log('✅ 同步完成');
+                    } catch (error) {
+                        console.error('Sync error:', error);
+                        showNotification('同期エラー: ' + error.message, 'error');
+                    }
+                }
+            });
+        }
+
+        // Auth state observer
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                console.log('User is signed in:', user.displayName);
+                
+                // Update UI - 显示已登录状态
+                if (guestProfile) guestProfile.style.display = 'none';
+                if (userProfile) userProfile.style.display = 'flex';
+                if (userAvatar) userAvatar.src = user.photoURL || '';
+                if (userAvatarMenu) userAvatarMenu.src = user.photoURL || '';
+                if (userNameMenu) userNameMenu.textContent = user.displayName || 'User';
+                if (userEmailMenu) userEmailMenu.textContent = user.email || '';
+                if (guestMenu) guestMenu.classList.remove('show');
+
+                // 显示排行榜统计与操作区域（仅登录时）
+                const leaderboardStats = document.querySelector('.leaderboard-stats');
+                const leaderboardActions = document.querySelector('.leaderboard-actions');
+                if (leaderboardStats) leaderboardStats.style.display = 'grid';
+                if (leaderboardActions) leaderboardActions.style.display = 'none';
+                
+                // 更新游戏面板头像
+                const gameUserAvatar = document.getElementById('gameUserAvatar');
+                const gameDefaultAvatar = document.getElementById('gameDefaultAvatar');
+                if (gameUserAvatar && user.photoURL) {
+                    gameUserAvatar.src = user.photoURL;
+                    gameUserAvatar.classList.remove('hidden');
+                    if (gameDefaultAvatar) gameDefaultAvatar.classList.add('hidden');
+                }
+
+                // Load user data
+                const dataLoaded = sessionStorage.getItem('dataLoaded');
+                if (dataLoaded !== 'true') {
+                    await loadUserData(user);
+                }
+                
+                // 刷新字典列表以显示错题本
+                if (window.populateDictionarySelect) {
+                    window.populateDictionarySelect();
+                }
+                
+                // 显示进度条和游戏面板
+                const progressTextInfo = document.getElementById('progress-text-info');
+                if (progressTextInfo) progressTextInfo.style.display = 'flex';
+                
+                const gameProgressPanel = document.querySelector('.game-progress-panel');
+                if (gameProgressPanel) gameProgressPanel.style.display = 'block';
+
+                // 显示排行榜入口按钮
+                if (headerLeaderboardBtn) headerLeaderboardBtn.style.display = 'inline-flex';
+            } else {
+                console.log('User is signed out');
+                sessionStorage.removeItem('dataLoaded');
+                // 账号已登出：清除本地积分信息
+                ['correct','wrong','combo','total'].forEach((k) => {
+                    try { localStorage.removeItem(k); } catch (_) {}
+                });
+                if (window.updateScoreboard) {
+                    try { window.updateScoreboard(); } catch (_) {}
+                }
+                
+                // Update UI - 显示未登录状态
+                if (guestProfile) guestProfile.style.display = 'flex';
+                if (userProfile) userProfile.style.display = 'none';
+                if (userMenu) userMenu.classList.remove('show');
+                if (guestMenu) guestMenu.classList.remove('show');
+
+                // 隐藏排行榜统计与操作区域（未登录）
+                const leaderboardStats = document.querySelector('.leaderboard-stats');
+                const leaderboardActions = document.querySelector('.leaderboard-actions');
+                if (leaderboardStats) leaderboardStats.style.display = 'none';
+                if (leaderboardActions) leaderboardActions.style.display = 'none';
+                
+                // 恢复游戏面板默认头像
+                const gameUserAvatar = document.getElementById('gameUserAvatar');
+                const gameDefaultAvatar = document.getElementById('gameDefaultAvatar');
+                if (gameUserAvatar) {
+                    gameUserAvatar.classList.add('hidden');
+                    gameUserAvatar.src = '';
+                }
+                if (gameDefaultAvatar) gameDefaultAvatar.classList.remove('hidden');
+                
+                // 刷新字典列表以隐藏错题本
+                if (window.populateDictionarySelect) {
+                    window.populateDictionarySelect();
+                }
+                
+                // 隐藏进度条和游戏面板
+                const progressTextInfo = document.getElementById('progress-text-info');
+                if (progressTextInfo) progressTextInfo.style.display = 'none';
+                
+                const gameProgressPanel = document.querySelector('.game-progress-panel');
+                if (gameProgressPanel) gameProgressPanel.style.display = 'none';
+
+                // 隐藏排行榜入口按钮
+                if (headerLeaderboardBtn) headerLeaderboardBtn.style.display = 'none';
+            }
+        });
+
+        // Leaderboard functionality
+        let leaderboardData = [];
+        let currentLeaderboardPage = 1;
+        const leaderboardPageSize = 5;
+
+        // Submit score to leaderboard
+        async function submitScoreToLeaderboard(options = {}) {
+            const { silent = false } = options;
+            const user = auth.currentUser;
+            if (!user) {
+                if (!silent) showNotification('まずはログインしてください', 'error');
+                return;
+            }
+
+            try {
+                // 计算总分：正确数 * 10 + 连击数 * 5 + 总题数 * 2
+                const correct = parseInt(localStorage.getItem('correct') || '0', 10);
+                const wrong = parseInt(localStorage.getItem('wrong') || '0', 10);
+                const combo = parseInt(localStorage.getItem('combo') || '0', 10);
+                // 以当前正确+错误计算总题数，避免 localStorage.total 为空或过期
+                const total = correct + wrong;
+                const score = correct * 10 + combo * 5 + total * 2;
+
+                if (score === 0) {
+                    if (!silent) showNotification('現在のスコアが 0 のため送信できません', 'error');
+                    return;
+                }
+
+                // 以 uid 作为文档 ID，覆盖该用户的排行榜记录
+                await setDoc(doc(db, 'leaderboard', user.uid), {
+                    uid: user.uid,
+                    displayName: user.displayName || 'Anonymous',
+                    photoURL: user.photoURL || '',
+                    score: score,
+                    correct: correct,
+                    wrong: wrong,
+                    combo: combo,
+                    total: total,
+                    submittedAt: serverTimestamp()
+                });
+
+                // 提交后立即读取验证（确认写入到本项目/本集合）
+                try {
+                    const meRef = doc(db, 'leaderboard', user.uid);
+                    const meSnap = await getDoc(meRef);
+                    console.log('✅ 提交后读取验证:', {
+                        exists: meSnap.exists(),
+                        id: meSnap.id,
+                        data: meSnap.exists() ? meSnap.data() : null
+                    });
+                } catch (verifyErr) {
+                    console.warn('提交后读取验证失败:', verifyErr);
+                }
+
+                if (!silent) showNotification('ランキングにスコアを送信しました！', 'success');
+                
+                // 刷新排行榜
+                await loadLeaderboard();
+            } catch (error) {
+                console.error('提交分数失败:', error);
+                if (!silent) showNotification('送信に失敗しました: ' + error.message, 'error');
+            }
+        }
+
+        // Load leaderboard data
+        async function loadLeaderboard() {
+            try {
+                const leaderboardList = document.getElementById('leaderboard-list');
+                if (leaderboardList) {
+                    leaderboardList.innerHTML = `
+                        <div class="leaderboard-loading">
+                            <div class="spinner" style="width: 24px; height: 24px; margin: 0 auto;"></div>
+                            <p>加载中...</p>
+                        </div>
+                    `;
+                }
+
+                // 查询排行榜数据，按分数降序排列
+                const leaderboardQuery = query(
+                    collection(db, 'leaderboard'),
+                    orderBy('score', 'desc'),
+                    limit(100) // 先取更多，避免同一用户占满
+                );
+                
+                const snapshot = await getDocs(leaderboardQuery);
+                leaderboardData = [];
+                
+                snapshot.forEach(doc => {
+                    leaderboardData.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                console.log('📊 查询到的原始数据:', leaderboardData.length, '条记录');
+                console.log('📊 用户分布:', leaderboardData.map(entry => ({ uid: entry.uid, displayName: entry.displayName, score: entry.score })));
+
+                // 兼容历史数据：按 uid 去重，仅保留每个用户“最新提交”的一条
+                const byUserLatest = new Map();
+                leaderboardData.forEach(entry => {
+                    const current = byUserLatest.get(entry.uid);
+                    const ts = (entry.submittedAt && entry.submittedAt.toMillis) ? entry.submittedAt.toMillis() : 0;
+                    const curTs = current && current.submittedAt && current.submittedAt.toMillis ? current.submittedAt.toMillis() : -1;
+                    if (!current || ts >= curTs) {
+                        byUserLatest.set(entry.uid, entry);
+                    }
+                });
+
+                // 只记录每个用户最新一条；显示时不再截断为10个
+                leaderboardData = Array.from(byUserLatest.values())
+                    .sort((a, b) => b.score - a.score);
+                
+                console.log('📊 去重后的数据:', leaderboardData.length, '个唯一用户');
+                console.log('📊 最终排行榜:', leaderboardData.map(entry => ({ uid: entry.uid, displayName: entry.displayName, score: entry.score })));
+
+                // 更新统计信息
+                updateLeaderboardStats();
+                
+                // 显示排行榜
+                displayLeaderboard();
+                
+            } catch (error) {
+                console.error('加载排行榜失败:', error);
+                const leaderboardList = document.getElementById('leaderboard-list');
+                if (leaderboardList) {
+                    leaderboardList.innerHTML = `
+                        <div class="leaderboard-empty">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"></path>
+                                <path d="M9 11V9a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
+                                <line x1="12" y1="15" x2="12" y2="17"></line>
+                            </svg>
+                    <p>ランキングの読み込みに失敗しました</p>
+                        </div>
+                    `;
+                }
+                showNotification('ランキングの読み込みに失敗しました: ' + error.message, 'error');
+            }
+        }
+
+        // Update leaderboard statistics
+        function updateLeaderboardStats() {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            // 更新总玩家数
+            const totalPlayersEl = document.getElementById('total-players');
+            if (totalPlayersEl) {
+                totalPlayersEl.textContent = leaderboardData.length;
+            }
+
+            // 查找当前用户排名和分数
+            const userIndex = leaderboardData.findIndex(entry => entry.uid === user.uid);
+            const myRankEl = document.getElementById('my-rank');
+            const myScoreEl = document.getElementById('my-score');
+            
+            if (userIndex !== -1) {
+                const userEntry = leaderboardData[userIndex];
+                if (myRankEl) myRankEl.textContent = userIndex + 1;
+                if (myScoreEl) myScoreEl.textContent = userEntry.score;
+            } else {
+                // 用户不在排行榜中，显示当前本地分数
+                const correct = parseInt(localStorage.getItem('correct') || '0', 10);
+                const combo = parseInt(localStorage.getItem('combo') || '0', 10);
+                const total = parseInt(localStorage.getItem('total') || '0', 10);
+                const score = correct * 10 + combo * 5 + total * 2;
+                
+                if (myRankEl) myRankEl.textContent = '-';
+                if (myScoreEl) myScoreEl.textContent = score;
+            }
+        }
+
+        // Display leaderboard
+        function calculateLevel(correctCount) {
+            // 与应用内等级逻辑保持一致：每 100 正解 = 1 级，起始 Lv.1
+            return Math.floor((Number(correctCount) || 0) / 100) + 1;
+        }
+
+        function displayLeaderboard() {
+            const leaderboardList = document.getElementById('leaderboard-list');
+            if (!leaderboardList) return;
+
+            if (leaderboardData.length === 0) {
+                leaderboardList.innerHTML = `
+                    <div class="leaderboard-empty">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"></path>
+                            <path d="M9 11V9a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
+                            <line x1="12" y1="15" x2="12" y2="17"></line>
+                        </svg>
+                        <p>ランキングデータがまだありません</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const user = auth.currentUser;
+            const startIndex = (currentLeaderboardPage - 1) * leaderboardPageSize;
+            const endIndex = Math.min(startIndex + leaderboardPageSize, leaderboardData.length);
+            const pageData = leaderboardData.slice(startIndex, endIndex);
+
+            let html = '';
+            pageData.forEach((entry, index) => {
+                const rank = startIndex + index + 1;
+                const isCurrentUser = user && entry.uid === user.uid;
+                
+                let rankClass = '';
+                if (rank === 1) rankClass = 'rank-1';
+                else if (rank === 2) rankClass = 'rank-2';
+                else if (rank === 3) rankClass = 'rank-3';
+                else if (rank <= 10) rankClass = 'top-3';
+
+                const level = calculateLevel(parseInt(entry.correct || 0, 10));
+                const lastUpdated = entry.submittedAt && entry.submittedAt.toDate ? entry.submittedAt.toDate() : null;
+                const lastBestText = lastUpdated ? new Date(lastUpdated).toLocaleString() : '';
+                const title = entry.combo >= 50 ? '伝説の連撃' : (entry.combo >= 20 ? '驚異の挑戦者' : (entry.combo >= 10 ? '素晴らしい挑戦者' : '挑戦者'));
+                html += `
+                    <div class="leaderboard-item ${isCurrentUser ? 'current-user' : ''}">
+                        <div class="leaderboard-rank ${rankClass}">${rank}</div>
+                        <div class="leaderboard-user">
+                            <img src="${entry.photoURL || '/static/logo.svg'}" 
+                                 alt="${entry.displayName}" 
+                                 class="leaderboard-avatar"
+                                 onerror="this.src='/static/logo.svg'">
+                            <div class="leaderboard-user-info">
+                                <div class="leaderboard-username">${entry.displayName} <span class="lb-level-badge">Lv.${level}</span> <span class="lb-title">${title}</span></div>
+                                <div class="leaderboard-user-stats">
+                                    <span class="lb-stat lb-correct" title="正解"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"></path><circle cx="12" cy="12" r="9"></circle></svg>${entry.correct || 0}</span>
+                                    <span class="lb-stat lb-wrong" title="錯題"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M9 9l6 6M15 9l-6 6"></path></svg>${entry.wrong || 0}</span>
+                                    <span class="lb-stat lb-combo" title="連撃"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9z"></path></svg>${entry.combo || 0}</span>
+                                    <span class="lb-stat lb-total" title="総題"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>${entry.total || 0}</span>
+                                </div>
+                                ${lastBestText ? `<div class="lb-lastbest">最終更新: ${lastBestText}</div>` : ''}
+                            </div>
+                        </div>
+                        <div class="leaderboard-score">${entry.score}</div>
+                    </div>
+                `;
+            });
+
+            leaderboardList.innerHTML = html;
+
+            // 更新分页
+            updateLeaderboardPagination();
+        }
+
+        // Update leaderboard pagination
+        function updateLeaderboardPagination() {
+            const totalPages = Math.ceil(leaderboardData.length / leaderboardPageSize);
+            const pagination = document.getElementById('leaderboard-pagination');
+            const prevBtn = document.getElementById('prev-leaderboard-page');
+            const nextBtn = document.getElementById('next-leaderboard-page');
+            const currentPageEl = document.getElementById('current-leaderboard-page');
+            const totalPagesEl = document.getElementById('total-leaderboard-pages');
+
+            if (totalPages <= 1) {
+                if (pagination) pagination.style.display = 'none';
+                return;
+            }
+
+            if (pagination) pagination.style.display = 'flex';
+            if (prevBtn) prevBtn.disabled = currentLeaderboardPage <= 1;
+            if (nextBtn) nextBtn.disabled = currentLeaderboardPage >= totalPages;
+            if (currentPageEl) currentPageEl.textContent = currentLeaderboardPage;
+            if (totalPagesEl) totalPagesEl.textContent = totalPages;
+        }
+
+        // Make functions available globally
+        window.syncUserData = syncUserData;
+        window.loadUserData = loadUserData;
+        window.submitScoreToLeaderboard = submitScoreToLeaderboard;
+        window.loadLeaderboard = loadLeaderboard;
+        
+        // Auto-sync on data changes
+        let autoSyncTimer = null;
+        window.autoSyncData = function() {
+            if (!window.firebaseAuth || !window.syncUserData) return;
+            
+            const user = window.firebaseAuth.currentUser;
+            if (!user) return;
+            
+            if (autoSyncTimer) clearTimeout(autoSyncTimer);
+            
+            autoSyncTimer = setTimeout(async () => {
+                try {
+                    console.log('🔄 自动同步...');
+                    await window.syncUserData(user);
+                } catch (error) {
+                    console.error('❌ 自动同步失败:', error);
+                }
+            }, 1000);
+        };
+        
+        // Sync before page unload
+        window.addEventListener('beforeunload', async () => {
+            const user = auth.currentUser;
+            if (user) {
+                try {
+                    await syncUserData(user);
+                } catch (error) {
+                    console.error('Error syncing on page unload:', error);
+                }
+            }
+        });
+        
+        // Simple notification function
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                background: ${type === 'success' ? '#16a34a' : type === 'error' ? '#dc2626' : '#4f46e5'};
+                color: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                font-size: 14px;
+                max-width: 320px;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+    </script>
+
+    <!-- PWA Installation Script -->
+    <script>
+        let deferredPrompt;
+        const installPWAGuest = document.getElementById('installPWAGuest');
+        const installPWAUser = document.getElementById('installPWAUser');
+        const pwaModal = document.getElementById('pwa-install-modal');
+        const pwaBackdrop = document.getElementById('modal-backdrop');
+        const pwaAddToHomeBtn = document.getElementById('pwa-add-to-home');
+
+        // Listen for beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install buttons
+            if (installPWAGuest) installPWAGuest.style.display = 'flex';
+            if (installPWAUser) installPWAUser.style.display = 'flex';
+            
+            console.log('[PWA] Install prompt captured');
+        });
+
+        // Handle PWA installation
+        async function installPWA() {
+            if (!deferredPrompt) {
+                // iOS or already installed
+                showIOSInstallInstructions();
+                return;
+            }
+
+            try {
+                // Show modal
+                if (pwaModal) pwaModal.classList.remove('hidden');
+                if (pwaBackdrop) pwaBackdrop.classList.remove('hidden');
+                
+                // Close menus
+                document.getElementById('guestMenu')?.classList.remove('show');
+                document.getElementById('userMenu')?.classList.remove('show');
+
+                // Step 1: Clear cache
+                await showStep('pwa-step-1');
+                await clearAllCaches();
+                
+                // Step 2: Download resources
+                await showStep('pwa-step-2');
+                await downloadResources();
+                
+                // Step 3: Show install prompt
+                await showStep('pwa-step-3');
+                
+            } catch (error) {
+                console.error('[PWA] Installation error:', error);
+                showError(error.message);
+            }
+        }
+
+        async function clearAllCaches() {
+            const progressBar = document.getElementById('pwa-progress-1');
+            const progressText = document.getElementById('pwa-progress-text-1');
+            
+            try {
+                progressText.textContent = 'キャッシュを削除中...';
+                progressBar.style.width = '30%';
+                
+                // Clear all caches
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+                
+                progressBar.style.width = '100%';
+                progressText.textContent = '完了';
+                
+                await new Promise(resolve => setTimeout(resolve, 500));
+            } catch (error) {
+                console.error('[PWA] Cache clear error:', error);
+            }
+        }
+
+        async function downloadResources() {
+            const progressBar = document.getElementById('pwa-progress-2');
+            const progressText = document.getElementById('pwa-progress-text-2');
+            
+            const resources = [
+                '/',
+                '/index.html',
+                '/static/app.js',
+                '/static/styles.css',
+                '/static/config.json',
+                '/manifest.json'
+            ];
+            
+            let completed = 0;
+            progressText.textContent = `${completed} / ${resources.length} ファイル`;
+            
+            for (const url of resources) {
+                try {
+                    await fetch(url, { cache: 'reload' });
+                    completed++;
+                    const percent = (completed / resources.length) * 100;
+                    progressBar.style.width = `${percent}%`;
+                    progressText.textContent = `${completed} / ${resources.length} ファイル`;
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                } catch (error) {
+                    console.error(`[PWA] Failed to download ${url}:`, error);
+                }
+            }
+        }
+
+        function showStep(stepId) {
+            return new Promise(resolve => {
+                document.querySelectorAll('.pwa-step').forEach(step => {
+                    step.classList.add('hidden');
+                });
+                const step = document.getElementById(stepId);
+                if (step) {
+                    step.classList.remove('hidden');
+                }
+                setTimeout(resolve, 300);
+            });
+        }
+
+        function showError(message) {
+            showStep('pwa-step-error');
+            const errorMsg = document.getElementById('pwa-error-message');
+            if (errorMsg) errorMsg.textContent = message;
+        }
+
+        function showIOSInstallInstructions() {
+            // Show iOS install instructions
+            if (pwaModal) pwaModal.classList.remove('hidden');
+            if (pwaBackdrop) pwaBackdrop.classList.remove('hidden');
+            
+            document.querySelectorAll('.pwa-step').forEach(step => step.classList.add('hidden'));
+            
+            const iosStep = document.createElement('div');
+            iosStep.className = 'pwa-step';
+            iosStep.innerHTML = `
+                <div class="pwa-icon">📱</div>
+                <h3>ホーム画面に追加</h3>
+                <p style="text-align: left; margin: 16px 0;">
+                    <strong>iOS の場合:</strong><br>
+                    1. 共有ボタン <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle;"><path d="M16 5l-1.42 1.42-1.59-1.59V16h-1.98V4.83L9.42 6.42 8 5l4-4 4 4zm4 5v11c0 1.1-.9 2-2 2H6c-1.11 0-2-.9-2-2V10c0-1.11.89-2 2-2h3v2H6v11h12V10h-3V8h3c1.1 0 2 .89 2 2z"/></svg> をタップ<br>
+                    2. 「ホーム画面に追加」を選択<br>
+                    3. 「追加」をタップ
+                </p>
+                <button type="button" class="ghost-button" data-close="pwa-modal" style="margin-top: 16px;">閉じる</button>
+            `;
+            
+            const content = document.getElementById('pwa-install-content');
+            if (content) {
+                content.appendChild(iosStep);
+            }
+        }
+
+        // Add to home screen button
+        if (pwaAddToHomeBtn) {
+            pwaAddToHomeBtn.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                console.log(`[PWA] User response: ${outcome}`);
+                
+                if (outcome === 'accepted') {
+                    console.log('[PWA] PWA installed');
+                }
+                
+                deferredPrompt = null;
+                if (installPWAGuest) installPWAGuest.style.display = 'none';
+                if (installPWAUser) installPWAUser.style.display = 'none';
+                
+                // Close modal
+                if (pwaModal) pwaModal.classList.add('hidden');
+                if (pwaBackdrop) pwaBackdrop.classList.add('hidden');
+            });
+        }
+
+        // Install button click handlers
+        if (installPWAGuest) {
+            installPWAGuest.addEventListener('click', installPWA);
+        }
+        if (installPWAUser) {
+            installPWAUser.addEventListener('click', installPWA);
+        }
+
+        // Close PWA modal
+        document.querySelectorAll('[data-close="pwa-modal"]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (pwaModal) pwaModal.classList.add('hidden');
+                if (pwaBackdrop) pwaBackdrop.classList.add('hidden');
+            });
+        });
+
+        // Register Service Worker
+        let swRegistration = null;
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        swRegistration = registration;
+                        console.log('[PWA] Service Worker registered:', registration.scope);
+                        
+                        // 检查缓存状态
+                        checkOfflineStatus();
+                        
+                        // 检查更新
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('[PWA] 新版本可用');
+                                }
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.error('[PWA] Service Worker registration failed:', error);
+                    });
+            });
+        }
+        
+        // 检查离线缓存状态
+        async function checkOfflineStatus() {
+            if (!navigator.serviceWorker || !navigator.serviceWorker.controller) {
+                return;
+            }
+            
+            const statusDiv = document.getElementById('offline-status');
+            if (!statusDiv) return;
+            
+            // 设置消息监听器
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data.type === 'CACHE_STATUS') {
+                    const { cached, total, percentage } = event.data;
+                    if (percentage === 100) {
+                        statusDiv.innerHTML = `✅ すべてのリソースがキャッシュ済み (${cached}/${total})`;
+                        statusDiv.style.color = '#16a34a';
+                    } else if (cached > 0) {
+                        statusDiv.innerHTML = `⚠️ 一部のリソースがキャッシュ済み (${cached}/${total} - ${percentage}%)`;
+                        statusDiv.style.color = '#f59e0b';
+                    } else {
+                        statusDiv.innerHTML = `📥 まだダウンロードされていません`;
+                        statusDiv.style.color = '#64748b';
+                    }
+                }
+            });
+            
+            // 请求缓存状态
+            navigator.serviceWorker.controller.postMessage({
+                type: 'CHECK_CACHE'
+            });
+        }
+        
+        // 下载离线资源
+        async function downloadForOffline() {
+            const downloadBtn = document.getElementById('download-for-offline');
+            const statusDiv = document.getElementById('offline-status');
+            
+            if (!navigator.serviceWorker || !navigator.serviceWorker.controller) {
+                statusDiv.innerHTML = '❌ Service Worker が利用できません';
+                statusDiv.style.color = '#dc2626';
+                return;
+            }
+            
+            // 禁用按钮
+            downloadBtn.disabled = true;
+            downloadBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px; animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>ダウンロード中...';
+            
+            // 设置进度监听器
+            const messageHandler = (event) => {
+                if (event.data.type === 'DOWNLOAD_PROGRESS') {
+                    const { completed, total, percentage, failed, status } = event.data;
+                    
+                    if (status === 'started') {
+                        statusDiv.innerHTML = '📥 ダウンロード開始...';
+                        statusDiv.style.color = '#4f46e5';
+                    } else if (status === 'downloading') {
+                        statusDiv.innerHTML = `📥 ダウンロード中... ${completed}/${total} (${percentage}%)`;
+                        if (failed > 0) {
+                            statusDiv.innerHTML += ` - ${failed}件失敗`;
+                        }
+                        statusDiv.style.color = '#4f46e5';
+                    } else if (status === 'completed') {
+                        navigator.serviceWorker.removeEventListener('message', messageHandler);
+                        
+                        if (failed === 0) {
+                            statusDiv.innerHTML = `✅ ダウンロード完了！ (${completed}/${total})`;
+                            statusDiv.style.color = '#16a34a';
+                            
+                            // 显示iOS添加到主屏的提示
+                            showAddToHomeScreenPrompt();
+                        } else {
+                            statusDiv.innerHTML = `⚠️ ダウンロード完了 (${completed}/${total} - ${failed}件失敗)`;
+                            statusDiv.style.color = '#f59e0b';
+                        }
+                        
+                        downloadBtn.disabled = false;
+                        downloadBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>オフライン用にダウンロード';
+                    }
+                }
+            };
+            
+            navigator.serviceWorker.addEventListener('message', messageHandler);
+            
+            // 发送下载请求
+            navigator.serviceWorker.controller.postMessage({
+                type: 'DOWNLOAD_ALL'
+            });
+        }
+        
+        // 显示添加到主屏的提示
+        function showAddToHomeScreenPrompt() {
+            // 检测是否是iOS
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+            
+            if (isIOS && !isInStandaloneMode) {
+                // 显示iOS添加提示
+                const statusDiv = document.getElementById('offline-status');
+                statusDiv.innerHTML = `
+                    <div style="margin-top: 16px; padding: 12px; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; text-align: left;">
+                        <strong style="color: #0369a1;">📱 ホーム画面に追加:</strong><br>
+                        <span style="font-size: 12px; color: #0c4a6e;">
+                            1. 共有ボタン <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle;"><path d="M16 5l-1.42 1.42-1.59-1.59V16h-1.98V4.83L9.42 6.42 8 5l4-4 4 4zm4 5v11c0 1.1-.9 2-2 2H6c-1.11 0-2-.9-2-2V10c0-1.11.89-2 2-2h3v2H6v11h12V10h-3V8h3c1.1 0 2 .89 2 2z"/></svg> をタップ<br>
+                            2. 「ホーム画面に追加」を選択<br>
+                            3. 「追加」をタップ
+                        </span>
+                    </div>
+                `;
+            } else if (!isIOS && deferredPrompt) {
+                // 对于Android等平台，显示安装提示
+                const statusDiv = document.getElementById('offline-status');
+                statusDiv.innerHTML = `
+                    <div style="margin-top: 16px;">
+                        <button onclick="installPWA()" style="width: 100%; padding: 10px; background: #4f46e5; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                            📱 アプリをインストール
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // 添加下载按钮的事件监听
+        document.addEventListener('DOMContentLoaded', () => {
+            const downloadBtn = document.getElementById('download-for-offline');
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', downloadForOffline);
+            }
+            
+            // 离线下载模态框控制
+            const offlineModal = document.getElementById('offline-download-modal');
+            const backdrop = document.getElementById('modal-backdrop');
+            const downloadOfflineGuest = document.getElementById('downloadOfflineGuest');
+            const downloadOfflineUser = document.getElementById('downloadOfflineUser');
+            const guestMenu = document.getElementById('guestMenu');
+            const userMenu = document.getElementById('userMenu');
+            
+            // 打开离线下载模态框
+            function openOfflineModal() {
+                if (offlineModal) offlineModal.classList.remove('hidden');
+                if (backdrop) backdrop.classList.remove('hidden');
+                setTimeout(checkOfflineStatus, 100);
+                if (guestMenu) guestMenu.classList.remove('show');
+                if (userMenu) userMenu.classList.remove('show');
+            }
+            
+            if (downloadOfflineGuest) {
+                downloadOfflineGuest.addEventListener('click', openOfflineModal);
+            }
+            
+            if (downloadOfflineUser) {
+                downloadOfflineUser.addEventListener('click', openOfflineModal);
+            }
+            
+            // 关闭离线下载模态框
+            document.querySelectorAll('[data-close="offline-modal"]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (offlineModal) offlineModal.classList.add('hidden');
+                    if (backdrop) backdrop.classList.add('hidden');
+                });
+            });
+        });
+
+        // Listen for app installed event
+        window.addEventListener('appinstalled', () => {
+            console.log('[PWA] App installed');
+            deferredPrompt = null;
+            if (installPWAGuest) installPWAGuest.style.display = 'none';
+            if (installPWAUser) installPWAUser.style.display = 'none';
+        });
+    </script>
+    
+    <script>
+        // 虚拟键盘切换函数已移至app.js，此处不再需要
+        
+        // 处理键盘按键点击
+        function handleKeyboardKey(key) {
+            console.log('键盘按键被点击:', key);
+            
+            // 播放按键音效
+            playKeySound();
+            
+            const input = document.getElementById('answer-input');
+            if (!input) return;
+            
+            const currentValue = input.value;
+            const cursorPos = input.selectionStart;
+            
+            switch (key) {
+                case 'backspace':
+                    console.log('删除键被点击 - 当前值:', currentValue, '长度:', currentValue.length, '光标位置:', cursorPos);
+                    
+                    // 多重备用机制确保删除键永远不会失效
+                    try {
+                        // 强制让input获得焦点
+                        input.focus();
+                        
+                        // 临时移除readonly以允许修改
+                        const wasReadonly = input.readOnly;
+                        input.readOnly = false;
+                        
+                        // 重新获取当前值，防止值不同步
+                        const freshValue = input.value || '';
+                        console.log('重新获取的当前值:', freshValue);
+                        
+                        if (freshValue.length > 0) {
+                            // 如果光标位置无效或为0，则删除最后一个字符
+                            let actualCursorPos = cursorPos;
+                            if (actualCursorPos <= 0 || actualCursorPos > freshValue.length) {
+                                actualCursorPos = freshValue.length;
+                            }
+                            
+                            // 计算删除后的新值
+                            const newValue = freshValue.slice(0, actualCursorPos - 1) + freshValue.slice(actualCursorPos);
+                            console.log('删除后新值:', newValue, '删除位置:', actualCursorPos - 1);
+                            
+                            // 直接设置新值
+                            input.value = newValue;
+                            
+                            // 设置光标位置到删除后的位置
+                            const newCursorPos = Math.max(0, actualCursorPos - 1);
+                            input.setSelectionRange(newCursorPos, newCursorPos);
+                            
+                            // 触发input事件，确保WanaKana等库能检测到变化
+                            input.dispatchEvent(new Event('input', { bubbles: true }));
+                            input.dispatchEvent(new Event('change', { bubbles: true }));
+                            
+                            console.log('删除成功 - 新值:', input.value, '新光标位置:', newCursorPos);
+                        } else {
+                            console.log('输入框为空，无需删除');
+                        }
+                        
+                        // 恢复readonly状态
+                        input.readOnly = wasReadonly;
+                        
+                    } catch (error) {
+                        console.error('删除键处理出错:', error);
+                        
+                        // 备用方案：直接删除最后一个字符
+                        try {
+                            const currentVal = input.value || '';
+                            if (currentVal.length > 0) {
+                                input.value = currentVal.slice(0, -1);
+                                input.dispatchEvent(new Event('input', { bubbles: true }));
+                                console.log('备用删除方案执行成功');
+                            }
+                        } catch (backupError) {
+                            console.error('备用删除方案也失败:', backupError);
+                        }
+                    }
+                    break;
+                case 'clear':
+                    // 临时移除readonly以允许修改
+                    const wasReadonlyClear = input.readOnly;
+                    input.readOnly = false;
+                    input.value = '';
+                    input.readOnly = wasReadonlyClear;
+                    break;
+                case 'space':
+                    // 强制让input获得焦点
+                    input.focus();
+                    
+                    // 临时移除readonly以允许修改
+                    const wasReadonlySpace = input.readOnly;
+                    input.readOnly = false;
+                    
+                    // 确保光标位置有效
+                    let actualCursorPosSpace = cursorPos;
+                    if (actualCursorPosSpace < 0 || actualCursorPosSpace > currentValue.length) {
+                        actualCursorPosSpace = currentValue.length;
+                    }
+                    
+                    const newValue = currentValue.slice(0, actualCursorPosSpace) + ' ' + currentValue.slice(actualCursorPosSpace);
+                    input.value = newValue;
+                    input.setSelectionRange(actualCursorPosSpace + 1, actualCursorPosSpace + 1);
+                    input.readOnly = wasReadonlySpace;
+                    break;
+                case 'enter':
+                    // 回车键 - 提交答案
+                    console.log('回车键被点击');
+                    const submitBtn = document.getElementById('answer-submit');
+                    if (submitBtn && !submitBtn.disabled) {
+                        console.log('触发提交按钮点击');
+                        submitBtn.click();
+                    } else {
+                        console.log('提交按钮未找到或已禁用');
+                    }
+                    break;
+                case 'skip':
+                    // スキップ按钮 - 触发跳过功能
+                    const skipBtn = document.getElementById('skip-button');
+                    if (skipBtn && !skipBtn.disabled) {
+                        skipBtn.click();
+                    }
+                    break;
+                case 'kana-toggle':
+                    // 平假名/片假名切换键
+                    katakanaMode = !katakanaMode;
+                    updateKanaToggleButton();
+                    break;
+                case 'l':
+                    // l键 - 输入长音符号（ー）
+                    input.focus();
+                    
+                    // 临时移除readonly以允许修改
+                    const wasReadonlyL = input.readOnly;
+                    input.readOnly = false;
+                    
+                    // 确保光标位置有效
+                    let actualCursorPosL = cursorPos;
+                    if (actualCursorPosL < 0 || actualCursorPosL > currentValue.length) {
+                        actualCursorPosL = currentValue.length;
+                    }
+                    
+                    // 插入长音符号
+                    const longVowel = 'ー';
+                    const newValueWithLongVowel = currentValue.slice(0, actualCursorPosL) + longVowel + currentValue.slice(actualCursorPosL);
+                    console.log('插入长音符号 - 新值:', newValueWithLongVowel, '插入位置:', actualCursorPosL);
+                    input.value = newValueWithLongVowel;
+                    input.setSelectionRange(actualCursorPosL + 1, actualCursorPosL + 1);
+                    input.readOnly = wasReadonlyL;
+                    break;
+                default:
+                    // 字母字符 - 直接插入到光标位置
+                    // 强制让input获得焦点
+                    input.focus();
+                    
+                    // 临时移除readonly以允许修改
+                    const wasReadonlyChar = input.readOnly;
+                    input.readOnly = false;
+                    
+                    // 确保光标位置有效
+                    let actualCursorPosChar = cursorPos;
+                    if (actualCursorPosChar < 0 || actualCursorPosChar > currentValue.length) {
+                        actualCursorPosChar = currentValue.length;
+                    }
+                    
+                    // 处理片假名/平假名模式
+                    let charToInsert = katakanaMode ? key.toUpperCase() : key.toLowerCase();
+                    
+                    const newValueWithChar = currentValue.slice(0, actualCursorPosChar) + charToInsert + currentValue.slice(actualCursorPosChar);
+                    console.log('插入字符后 - 新值:', newValueWithChar, '插入位置:', actualCursorPosChar);
+                    input.value = newValueWithChar;
+                    input.setSelectionRange(actualCursorPosChar + 1, actualCursorPosChar + 1);
+                    input.readOnly = wasReadonlyChar;
+                    break;
+            }
+            
+            // 统一触发一次input事件让WanaKana处理
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            
+            // 等待WanaKana处理后再检查结果
+            setTimeout(() => {
+                console.log('WanaKana处理后，当前值:', input.value);
+            }, 100);
+            
+            input.focus();
+        }
+        
+        // 虚拟键盘状态管理
+        let katakanaMode = false; // 片假名模式
+        
+        // 按键音效
+        function playKeySound() {
+            try {
+                // 创建音频上下文
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // 创建振荡器
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                // 连接节点
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // 设置音效参数
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime); // 800Hz
+                oscillator.type = 'sine';
+                
+                // 设置音量包络
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                // 播放音效
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+                
+            } catch (error) {
+                console.log('音效播放失败:', error);
+            }
+        }
+        
+        // 更新平假名/片假名切换键样式
+        function updateKanaToggleButton() {
+            const kanaButton = document.querySelector('.key-kana-toggle');
+            const kanaIndicator = document.querySelector('.kana-indicator');
+            if (kanaButton && kanaIndicator) {
+                kanaButton.classList.toggle('katakana-mode', katakanaMode);
+                kanaIndicator.textContent = katakanaMode ? 'カタ' : 'カタ';
+            }
+            
+            // 更新虚拟键盘上的字母显示
+            updateKeyboardLetterDisplay();
+        }
+        
+        // 更新虚拟键盘字母显示
+        function updateKeyboardLetterDisplay() {
+            const letterKeys = document.querySelectorAll('.key[data-key]');
+            letterKeys.forEach(key => {
+                const keyValue = key.getAttribute('data-key');
+                // 只处理字母键（a-z）
+                if (keyValue && keyValue.length === 1 && keyValue >= 'a' && keyValue <= 'z') {
+                    if (katakanaMode) {
+                        // 片假名模式：显示大写字母
+                        key.textContent = keyValue.toUpperCase();
+                    } else {
+                        // 平假名模式：显示小写字母
+                        key.textContent = keyValue.toLowerCase();
+                    }
+                }
+            });
+        }
+        
+        // 页面加载完成后添加键盘按键事件
+        document.addEventListener('DOMContentLoaded', function() {
+            // 焦点管理已移至app.js的initVirtualKeyboard函数中处理
+            
+            // 初始化虚拟键盘字母显示
+            updateKeyboardLetterDisplay();
+            const keyboard = document.getElementById('virtual-keyboard');
+            if (keyboard) {
+                keyboard.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('key')) {
+                        const key = e.target.getAttribute('data-key');
+                        // 排除有专门事件处理的键
+                        if (key !== 'kana-toggle' && key !== 'enter') {
+                            handleKeyboardKey(key);
+                        }
+                    }
+                });
+                
+                
+                // 防止移动端误触放大
+                keyboard.addEventListener('touchstart', function(e) {
+                    if (e.touches.length > 1) {
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+                
+                // 为删除键添加额外的点击事件监听器，确保永远不会失效
+                const backspaceButton = document.querySelector('.key-backspace');
+                if (backspaceButton) {
+                    // 添加多重事件监听器
+                    const handleBackspaceClick = function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const input = document.getElementById('answer-input');
+                        if (!input) return;
+                        
+                        console.log('删除键额外监听器被触发');
+                        
+                        // 播放按键音效
+                        playKeySound();
+                        
+                        try {
+                            // 强制焦点
+                            input.focus();
+                            
+                            // 临时移除readonly
+                            const wasReadonly = input.readOnly;
+                            input.readOnly = false;
+                            
+                            // 获取当前值
+                            const currentVal = input.value || '';
+                            console.log('删除键额外监听器 - 当前值:', currentVal);
+                            
+                            if (currentVal.length > 0) {
+                                // 删除最后一个字符
+                                const newVal = currentVal.slice(0, -1);
+                                input.value = newVal;
+                                
+                                // 设置光标位置
+                                input.setSelectionRange(newVal.length, newVal.length);
+                                
+                                // 触发事件
+                                input.dispatchEvent(new Event('input', { bubbles: true }));
+                                input.dispatchEvent(new Event('change', { bubbles: true }));
+                                
+                                console.log('删除键额外监听器 - 删除成功，新值:', newVal);
+                            }
+                            
+                            // 恢复readonly
+                            input.readOnly = wasReadonly;
+                            
+                        } catch (error) {
+                            console.error('删除键额外监听器出错:', error);
+                        }
+                    };
+                    
+                    // 添加多种事件监听器
+                    backspaceButton.addEventListener('click', handleBackspaceClick, { passive: false });
+                    backspaceButton.addEventListener('touchstart', handleBackspaceClick, { passive: false });
+                    backspaceButton.addEventListener('mousedown', handleBackspaceClick, { passive: false });
+                    
+                    console.log('删除键额外监听器已添加');
+                }
+                
+                // 为平假名/片假名切换键添加专门的事件监听器，确保不会被其他事件干扰
+                const kanaToggleButton = document.querySelector('.key-kana-toggle');
+                if (kanaToggleButton) {
+                    const handleKanaToggleClick = function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        
+                        console.log('平假名/片假名切换键被点击，当前模式:', katakanaMode);
+                        
+                        // 播放按键音效
+                        playKeySound();
+                        
+                        // 切换模式
+                        katakanaMode = !katakanaMode;
+                        
+                        // 更新按钮样式
+                        updateKanaToggleButton();
+                        
+                        console.log('切换后模式:', katakanaMode);
+                    };
+                    
+                    // 添加多种事件监听器，确保响应
+                    kanaToggleButton.addEventListener('click', handleKanaToggleClick, { passive: false });
+                    kanaToggleButton.addEventListener('touchstart', handleKanaToggleClick, { passive: false });
+                    kanaToggleButton.addEventListener('mousedown', handleKanaToggleClick, { passive: false });
+                    
+                    console.log('平假名/片假名切换键专门监听器已添加');
+                }
+                
+                // 为回车键添加专门的事件监听器，确保不会被其他事件干扰
+                const enterButton = document.querySelector('.key-enter');
+                if (enterButton) {
+                    const handleEnterClick = function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        
+                        console.log('回车键专门监听器被触发');
+                        
+                        // 播放按键音效
+                        playKeySound();
+                        
+                        const submitBtn = document.getElementById('answer-submit');
+                        if (submitBtn && !submitBtn.disabled) {
+                            console.log('触发提交按钮点击');
+                            submitBtn.click();
+                        } else {
+                            console.log('提交按钮未找到或已禁用');
+                        }
+                    };
+                    
+                    // 添加多种事件监听器，确保响应
+                    enterButton.addEventListener('click', handleEnterClick, { passive: false });
+                    enterButton.addEventListener('touchstart', handleEnterClick, { passive: false });
+                    enterButton.addEventListener('mousedown', handleEnterClick, { passive: false });
+                    
+                    console.log('回车键专门监听器已添加');
+                }
+                
+                keyboard.addEventListener('touchend', function(e) {
+                    if (e.touches.length > 1) {
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+            }
+            
+            // 为虚拟键盘中的スキップ按钮添加直接事件监听器
+            const keyboardSkipButton = document.getElementById('keyboard-skip-button');
+            if (keyboardSkipButton) {
+                keyboardSkipButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('虚拟键盘スキップ按钮被点击');
+                    
+                    // 触发主界面的跳过功能
+                    const mainSkipBtn = document.getElementById('skip-button');
+                    if (mainSkipBtn && !mainSkipBtn.disabled) {
+                        mainSkipBtn.click();
+                    }
+                });
+            }
+            
+            // 全局防止移动端误触放大
+            document.addEventListener('touchstart', function(e) {
+                if (e.touches.length > 1) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            document.addEventListener('touchend', function(e) {
+                if (e.touches.length > 1) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        });
+    </script>
+    
+    <!-- 键盘容器 -->
+    <div id="keyboard-container" class="keyboard-container">
+        <!-- 虚拟键盘 -->
+        <div id="virtual-keyboard" class="virtual-keyboard show">
+        <div class="keyboard-body">
+            <!-- QWERTY 第一行 -->
+            <div class="keyboard-row">
+                <button class="key" data-key="q">q</button>
+                <button class="key" data-key="w">w</button>
+                <button class="key" data-key="e">e</button>
+                <button class="key" data-key="r">r</button>
+                <button class="key" data-key="t">t</button>
+                <button class="key" data-key="y">y</button>
+                <button class="key" data-key="u">u</button>
+                <button class="key" data-key="i">i</button>
+                <button class="key" data-key="o">o</button>
+                <button class="key" data-key="p">p</button>
+            </div>
+            <!-- QWERTY 第二行 -->
+            <div class="keyboard-row">
+                <button class="key" data-key="a">a</button>
+                <button class="key" data-key="s">s</button>
+                <button class="key" data-key="d">d</button>
+                <button class="key" data-key="f">f</button>
+                <button class="key" data-key="g">g</button>
+                <button class="key" data-key="h">h</button>
+                <button class="key" data-key="j">j</button>
+                <button class="key" data-key="k">k</button>
+                <button class="key" data-key="l">l</button>
+            </div>
+            <!-- QWERTY 第三行 -->
+            <div class="keyboard-row">
+                <button class="key key-kana-toggle" data-key="kana-toggle">
+                    <span class="kana-indicator">カタ</span>
+                </button>
+                <button class="key" data-key="z">z</button>
+                <button class="key" data-key="x">x</button>
+                <button class="key" data-key="c">c</button>
+                <button class="key" data-key="v">v</button>
+                <button class="key" data-key="b">b</button>
+                <button class="key" data-key="n">n</button>
+                <button class="key" data-key="m">m</button>
+                <button class="key key-backspace" data-key="backspace">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/>
+                        <path d="M18 9l-6 6"/>
+                        <path d="M12 9l6 6"/>
+                    </svg>
+                </button>
+            </div>
+            <!-- 功能键行 -->
+            <div class="keyboard-row keyboard-controls">
+                <button class="key key-flick-toggle" data-key="flick-toggle" title="フリック入力">
+                    <span class="flick-icon">フリック</span>
+                </button>
+                <button class="key key-space" data-key="space">
+                    <span class="space-text">Space</span>
+                    <span class="space-lang">A</span>
+                </button>
+                <button class="key key-enter" data-key="enter">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 10l-5 5 5 5"/>
+                        <path d="M20 4v7a4 4 0 0 1-4 4H4"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        </div>
+
+        <!-- フリック键盘 -->
+        <div id="flick-keyboard" class="flick-keyboard hidden">
+        <div class="keyboard-body flick-keyboard-body">
+            <div class="flick-keyboard-layout">
+                <!-- 左侧功能按钮 -->
+                <div class="flick-sidebar">
+                    <!-- Esc按钮 -->
+                    <button class="key flick-function-key flick-escape" data-key="flick-escape" title="取消选择">
+                        <span class="escape-text">Esc</span>
+                    </button>
+                    <!-- 片假名模式按钮 -->
+                    <button class="key flick-function-key flick-katakana" data-key="flick-katakana" title="片假名模式">
+                        <span class="katakana-text">カタカナ</span>
+                    </button>
+                    <!-- 返回默认键盘按钮 -->
+                    <button class="key flick-function-key flick-back" data-key="flick-back" title="返回默认键盘">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5"/>
+                            <path d="M12 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- 中间字符键区域 -->
+                <div class="flick-keys-area">
+                    <!-- 第一行 -->
+                    <div class="keyboard-row flick-row">
+                        <button class="key flick-key" data-flick="あ" data-flick-left="い" data-flick-up="う" data-flick-right="え" data-flick-down="お">あ</button>
+                        <button class="key flick-key" data-flick="か" data-flick-left="き" data-flick-up="く" data-flick-right="け" data-flick-down="こ">か</button>
+                        <button class="key flick-key" data-flick="さ" data-flick-left="し" data-flick-up="す" data-flick-right="せ" data-flick-down="そ">さ</button>
+                    </div>
+                    <!-- 第二行 -->
+                    <div class="keyboard-row flick-row">
+                        <button class="key flick-key" data-flick="た" data-flick-left="ち" data-flick-up="つ" data-flick-right="て" data-flick-down="と">た</button>
+                        <button class="key flick-key" data-flick="な" data-flick-left="に" data-flick-up="ぬ" data-flick-right="ね" data-flick-down="の">な</button>
+                        <button class="key flick-key" data-flick="は" data-flick-left="ひ" data-flick-up="ふ" data-flick-right="へ" data-flick-down="ほ">は</button>
+                    </div>
+                    <!-- 第三行 -->
+                    <div class="keyboard-row flick-row">
+                        <button class="key flick-key" data-flick="ま" data-flick-left="み" data-flick-up="む" data-flick-right="め" data-flick-down="も">ま</button>
+                        <button class="key flick-key" data-flick="や" data-flick-up="ゆ" data-flick-down="よ">や</button>
+                        <button class="key flick-key" data-flick="ら" data-flick-left="り" data-flick-up="る" data-flick-right="れ" data-flick-down="ろ">ら</button>
+                    </div>
+                    <!-- 第四行 -->
+                    <div class="keyboard-row flick-row">
+                        <button class="key flick-key flick-voicing" data-flick="小">小</button>
+                        <button class="key flick-key" data-flick="わ" data-flick-left="を" data-flick-up="ん" data-flick-right="ー">わ</button>
+                        <button class="key flick-key" data-flick="ー">ー</button>
+                    </div>
+                </div>
+                
+                <!-- 右侧功能按钮 -->
+                <div class="flick-right-sidebar">
+                    <!-- 删除按钮 -->
+                    <button class="key flick-function-key flick-delete" data-key="flick-delete" title="删除">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                            <path d="M18 9l-6 6"></path>
+                            <path d="M12 9l6 6"></path>
+                        </svg>
+                    </button>
+                    <!-- 空白按钮 -->
+                    <button class="key flick-function-key flick-space" data-key="flick-space" title="Space">
+                        <span class="space-text">Space</span>
+                    </button>
+                    <!-- 提交按钮 -->
+                    <button class="key flick-function-key flick-submit" data-key="flick-submit" >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 10l-5 5 5 5"></path>
+                            <path d="M20 4v7a4 4 0 0 1-4 4H4"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</body>
+</html>

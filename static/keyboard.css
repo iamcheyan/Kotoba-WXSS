@@ -1,0 +1,886 @@
+/* === 键盘容器样式 === */
+.keyboard-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.keyboard-container.show {
+    transform: translateY(0) !important;
+}
+
+.keyboard-container.hidden {
+    display: none !important;
+}
+
+/* === 虚拟键盘样式 - 深色主题 === */
+.keyboard-toggle {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 8px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+/* PC设备上隐藏键盘切换按钮和键盘容器 */
+@media (min-width: 769px) {
+    .keyboard-toggle {
+        display: none !important;
+    }
+    
+    .keyboard-container {
+        display: none !important;
+    }
+}
+
+.keyboard-toggle:hover {
+    background: rgba(0, 0, 0, 0.2);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.virtual-keyboard,
+.flick-keyboard {
+    height: 180px;
+}
+
+.virtual-keyboard {
+    background: #000000;
+    border-top: 1px solid #333333;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.virtual-keyboard.show {
+    display: block !important;
+}
+
+.virtual-keyboard.hidden {
+    display: none !important;
+}
+
+.keyboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #111111;
+    border-bottom: 1px solid #333333;
+}
+
+.keyboard-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.keyboard-close {
+    background: none;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.keyboard-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.keyboard-body {
+    padding: 16px 0;
+    max-height: 60vh;
+    background: #000000;
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 4px;
+}
+
+.keyboard-row:last-child {
+    margin-bottom: 0;
+}
+
+.key {
+    background: #333333;
+    border: 1px solid #444444;
+    border-radius: 8px;
+    padding: 12px 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    min-width: 40px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    flex: 1;
+    max-width: 50px;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.key:hover {
+    background: #444444;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.key:active {
+    background: #007AFF;
+    transform: scale(0.9);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    border-color: #9ca3af;
+    transition: all 0.05s ease;
+}
+
+/* 平假名/片假名切换键样式 */
+.key-kana-toggle {
+    flex: 1.2;
+    max-width: 60px;
+    /* background: #4a90e2; */
+    color: #ffffff;
+    transition: all 0.2s ease;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.key-kana-toggle:active {
+    background: #2c5aa0;
+    transform: scale(0.9);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.05s ease;
+}
+
+.key-kana-toggle.katakana-mode {
+    background: #ff6b35;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(255, 107, 53, 0.5);
+    animation: katakanaPulse 2s ease-in-out infinite;
+}
+
+@keyframes katakanaPulse {
+    0%, 100% {
+        box-shadow: 0 0 12px rgba(255, 107, 53, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 107, 53, 0.8);
+    }
+}
+
+.kana-indicator {
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.key-backspace {
+    flex: 1.2;
+    max-width: 60px;
+    background: #444444;
+}
+
+.key-backspace:active {
+    background: #2d2d2d;
+    transform: scale(0.9);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    transition: all 0.05s ease;
+}
+
+.keyboard-skip-button {
+    flex: 1.5;
+    max-width: 80px;
+    background: #ff6b35;
+    color: #ffffff;
+    font-weight: 600;
+    border: 1px solid #444444;
+    border-radius: 8px;
+    /* padding: 12px 8px; */
+    /* font-size: 1rem; */
+    cursor: pointer;
+    transition: all 0.15s ease;
+    min-width: 40px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    user-select: none;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.keyboard-skip-button:hover {
+    background: #ff7a4a;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.keyboard-skip-button:active {
+    background: #cc4a22;
+    transform: scale(0.9);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.05s ease;
+}
+
+.key-space {
+    flex: 4;
+    max-width: 200px;
+    position: relative;
+    background: #333333;
+}
+
+.key-space:active {
+    background: #1f1f1f;
+    transform: scale(0.95);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    transition: all 0.05s ease;
+}
+
+.space-text {
+    font-size: 0.9rem;
+    color: #ffffff;
+}
+
+.space-lang {
+    position: absolute;
+    bottom: 4px;
+    right: 8px;
+    font-size: 0.7rem;
+    color: #aaaaaa;
+}
+
+
+
+
+/* 移动端虚拟键盘样式 */
+@media (max-width: 639px) {
+    .keyboard-toggle {
+        right: 4px;
+        padding: 6px;
+    }
+    
+    .virtual-keyboard {
+        max-height: 50vh;
+    }
+    
+    .keyboard-body {
+        padding: 5px 10px;
+        max-height: 40vh;
+    }
+    
+    .keyboard-row {
+        gap: 4px;
+        margin-bottom: 6px;
+    }
+    
+    .key {
+        padding: 8px 6px;
+        /* font-size: 0.9rem; */
+        min-width: 32px;
+        min-height: 32px;
+        max-width: 45px;
+    }
+    
+    .key-shift,
+    .key-backspace {
+        max-width: 55px;
+    }
+    
+    
+    .key-space {
+        max-width: 100%;
+    }
+    
+    .key-enter {
+        min-width: 79px;
+    }
+}
+
+/* === フリック键盘样式 === */
+.flick-keyboard {
+    background: #000000;
+    border-top: 1px solid #333333;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.flick-keyboard.show {
+    display: block !important;
+}
+
+.flick-keyboard.hidden {
+    display: none !important;
+}
+
+/* 确保两个键盘永远不会同时显示 */
+.keyboard-container .virtual-keyboard.show ~ .flick-keyboard {
+    display: none !important;
+}
+
+.keyboard-container .flick-keyboard.show ~ .virtual-keyboard {
+    display: none !important;
+}
+
+/* フリック键盘主体 */
+.flick-keyboard-body {
+    padding: 16px 0;
+    max-height: 60vh;
+    background: #000000;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* フリック键盘布局 */
+.flick-keyboard-layout {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+    /* padding: 0 16px; */
+}
+
+/* フリック键盘侧边栏 */
+.flick-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 70px;
+}
+
+/* フリック键盘字符键区域 */
+.flick-keys-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* フリック键盘右侧边栏 */
+.flick-right-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 70px;
+}
+
+/* フリック键盘行 */
+.flick-row {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+/* フリック切换按钮样式 */
+.key-flick-toggle {
+    flex: 1;
+    min-width: 78px;
+    /* background: #4a5568; */
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.key-flick-toggle:hover {
+    background: #5a6578;
+}
+
+.key-flick-toggle:active {
+    background: #3a4558;
+    transform: scale(0.95);
+}
+
+/* フリック键样式 */
+.flick-key {
+    position: relative;
+    background: #333333;
+    color: #ffffff;
+    border: 1px solid #444444;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    min-height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    z-index: 1;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    flex: 1;
+    max-width: 65px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.flick-key:hover {
+    background: #404040;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.flick-key:active {
+    background: #1f1f1f;
+    transform: scale(0.95);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.05s ease;
+}
+
+/* フリック功能键样式 */
+.flick-function-key {
+    position: relative;
+    background: #333333;
+    color: #ffffff;
+    border: 1px solid #444444;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    min-height: 50px;
+    min-width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    flex: 1;
+    max-width: 60px;
+}
+
+.flick-function-key:hover {
+    background: #404040;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.flick-function-key:active {
+    background: #1f1f1f;
+    transform: scale(0.95);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.05s ease;
+}
+
+/* フリック展开效果 */
+.flick-key.flick-expanded {
+    background: #4a90e2;
+    color: #ffffff;
+    transform: scale(1.1);
+    z-index: 10;
+    box-shadow: 0 4px 20px rgba(74, 144, 226, 0.4);
+}
+
+.flick-key.flick-expanded::before {
+    content: '';
+    position: absolute;
+    top: -0;
+    left: -0;
+    right: -0;
+    bottom: -0;
+    background: linear-gradient(45deg, #0075ff, #0065dd);
+    border-radius: 10px;
+    z-index: -1;
+}
+
+/* フリック方向指示器 */
+.flick-indicator {
+    position: absolute;
+    background: #007AFF;
+    color: #ffffff;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 18px;
+    font-weight: 500;
+    pointer-events: auto;
+    z-index: 1001;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    min-width: 50px;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(74, 144, 226, 0.3);
+    animation: flickSlideIn 0.2s ease-out;
+    cursor: pointer;
+}
+
+/* フリック指示器高亮效果 */
+.flick-indicator.highlighted {
+    background: #ffcc00 !important;
+    color: #333333 !important;
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.8) !important;
+    transform: scale(1.1) !important;
+    transition: all 0.1s ease-out;
+    z-index: 1002 !important;
+}
+
+.flick-indicator.up {
+    top: -45px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    animation: flickSlideInUp 0.2s ease-out;
+}
+
+.flick-indicator.down {
+    bottom: -45px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    animation: flickSlideInDown 0.2s ease-out;
+}
+
+.flick-indicator.left {
+    left: -45px;
+    top: 50%;
+    transform: translateY(-50%) translateX(-10px);
+    animation: flickSlideInLeft 0.2s ease-out;
+}
+
+.flick-indicator.right {
+    right: -45px;
+    top: 50%;
+    transform: translateY(-50%) translateX(10px);
+    animation: flickSlideInRight 0.2s ease-out;
+}
+
+/* フリック指示器动画 */
+@keyframes flickSlideIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes flickSlideInUp {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(0px) scale(0.7);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-10px) scale(1);
+    }
+}
+
+@keyframes flickSlideInDown {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(0px) scale(0.7);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(10px) scale(1);
+    }
+}
+
+@keyframes flickSlideInLeft {
+    0% {
+        opacity: 0;
+        transform: translateY(-50%) translateX(0px) scale(0.7);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(-50%) translateX(-10px) scale(1);
+    }
+}
+
+@keyframes flickSlideInRight {
+    0% {
+        opacity: 0;
+        transform: translateY(-50%) translateX(0px) scale(0.7);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(-50%) translateX(10px) scale(1);
+    }
+}
+
+/* フリック返回按钮 */
+.key-flick-back {
+    flex: 1;
+    max-width: 80px;
+    background: #6b7280;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.key-flick-back:hover {
+    background: #7b8280;
+}
+
+.key-flick-back:active {
+    background: #5b6280;
+    transform: scale(0.95);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .flick-keyboard-body {
+        padding: 6px 10px;
+        gap: 3px;
+    }
+    
+    .flick-row {
+        gap: 3px;
+    }
+    
+    /* .flick-key {
+        min-height: 45px;
+        min-width: 45px;
+        font-size: 16px;
+        max-width: 55px;
+    } */
+    
+    .flick-function-key {
+        min-height: 45px;
+        min-width: 45px;
+        font-size: 10px;
+        max-width: 55px;
+    }
+    
+    .flick-indicator {
+        font-size: 16px;
+        padding: 5px 10px;
+        min-width: 60px;
+        min-height: 36px;
+    }
+    
+    .flick-indicator.up {
+        top: -29px;
+    }
+    
+    .flick-indicator.down {
+        bottom: -29px;
+    }
+    
+    .flick-indicator.left {
+        left: -49px;
+    }
+    
+    .flick-indicator.right {
+        right: -49px;
+    }
+}
+
+/* 防止输入框获得焦点时弹出原生键盘 */
+#answer-input:focus {
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 当フリック键盘显示时，禁用输入框焦点 */
+.flick-keyboard.show ~ * #answer-input,
+.flick-keyboard.show #answer-input {
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* フリック侧边栏按钮样式 */
+.flick-sidebar .flick-function-key {
+    width: 100%;
+    /* min-height: 60px; */
+    max-width: none;
+    font-size: 10px;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* 片假名按钮样式 */
+.flick-katakana {
+    background: #333333;
+    border-color: #444444;
+}
+
+.flick-katakana:hover {
+    background: #404040;
+}
+
+.flick-katakana:active {
+    background: #1f1f1f;
+}
+
+/* 片假名按钮激活状态 */
+.flick-katakana.active {
+    background: #ff6b35;
+    border-color: #ff6b35;
+}
+
+.flick-katakana.active:hover {
+    background: #ff6b35;
+}
+
+.flick-katakana.active:active {
+    background: #ff6b35;
+}
+
+/* 返回按钮样式 */
+.flick-back {
+    background: #333333;
+    border-color: #444444;
+}
+
+.flick-back:hover {
+    background: #404040;
+}
+
+.flick-back:active {
+    background: #1f1f1f;
+}
+
+/* 片假名文字样式 */
+.katakana-text {
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Esc按钮样式 */
+.flick-escape {
+    background: #444444;
+    border-color: #555555;
+}
+
+.flick-escape:hover {
+    background: #555555;
+}
+
+.flick-escape:active {
+    background: #2d2d2d;
+}
+
+/* Esc文字样式 */
+.escape-text {
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* 右侧功能按钮样式 */
+.flick-right-sidebar .flick-function-key {
+    width: 100%;
+    min-height: 50px;
+    max-width: none;
+    font-size: 11px;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* 删除按钮样式 */
+.flick-delete {
+    background: #444444;
+    border-color: #555555;
+}
+
+.flick-delete:hover {
+    background: #555555;
+}
+
+.flick-delete:active {
+    background: #2d2d2d;
+}
+
+/* 空白按钮样式 */
+.flick-space {
+    background: #333333;
+    border-color: #444444;
+}
+
+.flick-space:hover {
+    background: #404040;
+}
+
+.flick-space:active {
+    background: #1f1f1f;
+}
+
+
+
+/* 功能按钮文字样式 */
+.space-text,
+.submit-text {
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.flick-submit,
+.key-enter {
+    flex: 1.5;
+    max-width: 80px;
+    background: linear-gradient(180deg, #98e66d, #64c33d);
+    color: #2f4b1d;
+    border: none;
+    /* box-shadow: 0 4px 0 #3b7b25, 0 6px 10px rgba(0, 0, 0, 0.3); */
+}
+
+.flick-submit:hover,
+.key-enter:hover {
+    background: linear-gradient(180deg, #90ea60, #58cf2a);
+}
+
+.flick-submit:active,
+.key-enter:active {
+    background: linear-gradient(180deg, #84e052, #59d129);
+    transform: scale(0.9);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.05s ease;
+}

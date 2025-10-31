@@ -1,0 +1,62 @@
+<view class="container">
+  <view class="header">
+    <view class="title">言葉 | Kotoba</view>
+    <view class="dictionary-bar">
+      <view class="dictionary-name">
+        {{selectedDictionaryName || '未选择词典'}}
+      </view>
+      <button size="mini" class="dictionary-button" bindtap="onSelectDictionaryTap">
+        切换词典
+      </button>
+    </view>
+    <view class="stats">
+      <text>掌握 {{progress.mastered}} / {{progress.total}}</text>
+      <text wx:if="{{dictionaryCompleted}}" class="badge">已完成</text>
+    </view>
+  </view>
+
+  <view wx:if="{{currentEntry}}" class="card">
+    <view class="kanji">
+      {{currentEntry.kanji}}
+    </view>
+    <view class="card-divider"></view>
+    <view class="meaning" wx:if="{{showMeaning}}">
+      {{currentEntry.meaning}}
+    </view>
+    <view class="meaning placeholder" wx:else>
+      点击“显示释义”查看答案
+    </view>
+    <view class="card-actions">
+      <button wx:if="{{!showMeaning}}" class="action primary" bindtap="onRevealMeaning">
+        显示释义
+      </button>
+      <button class="action success" bindtap="onMarkMastered">
+        记住了
+      </button>
+      <button class="action warn" bindtap="onMarkAgain">
+        加入错题
+      </button>
+      <button class="action ghost" bindtap="onNextCard">
+        换一题
+      </button>
+    </view>
+  </view>
+
+  <view wx:else class="empty">
+    <text>{{emptyMessage || '暂无词条'}}</text>
+  </view>
+
+  <view class="footer">
+    <view class="footer-buttons">
+      <button class="footer-btn ghost" bindtap="onClearProgress">
+        清除掌握记录
+      </button>
+      <button class="footer-btn ghost" bindtap="onClearWrongWords">
+        清空错题本
+      </button>
+    </view>
+    <view class="feedback" wx:if="{{feedback}}">
+      {{feedback}}
+    </view>
+  </view>
+</view>
