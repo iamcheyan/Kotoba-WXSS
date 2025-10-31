@@ -10,6 +10,14 @@ If you find Kotoba useful, please consider giving it a star! ⭐
 
 ---
 
+## 📱 微信小程序版 | WeChat Mini Program
+
+- 根目录已经提供原生微信小程序结构（`app.json`、`app.wxss`、`pages/index` 等）
+- 打开微信开发者工具 → 选择“导入项目” → 指向当前仓库根目录（`Kotoba@WX`）
+- 若需要替换 AppID，可修改 `project.config.json` 中的 `appid`
+- 支持功能：词库切换、随机抽卡、掌握统计、错题本循环练习
+- 尚未移植的桌面特性：语音合成、拼词模式、Firebase 登录以及浏览器专属动画
+
 ## <a id="japanese"></a>🇯🇵 日本語
 
 ### 🎯 **フロントエンド日本語語彙学習アプリ** - JSONファイルを読み込むためのシンプルなHTTPサーバーが必要です

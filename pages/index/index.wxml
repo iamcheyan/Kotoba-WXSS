@@ -1,62 +1,812 @@
-<view class="container">
-  <view class="header">
-    <view class="title">言葉 | Kotoba</view>
-    <view class="dictionary-bar">
-      <view class="dictionary-name">
-        {{selectedDictionaryName || '未选择词典'}}
-      </view>
-      <button size="mini" class="dictionary-button" bindtap="onSelectDictionaryTap">
-        切换词典
-      </button>
-    </view>
-    <view class="stats">
-      <text>掌握 {{progress.mastered}} / {{progress.total}}</text>
-      <text wx:if="{{dictionaryCompleted}}" class="badge">已完成</text>
-    </view>
-  </view>
+<view class="body theme-magic">
+<view class="app">
+        <view class="app-header">
+            <view class="header-left">
+                <view class="branding">
+                    <text class="branding-logo" aria-hidden="true">
+                        <image src="../../static/logo.svg" alt="Kotoba" width="42" height="42" />
+                    </text>
+                    <view data-href="/" class="branding-title">言葉</view>
+                </view>
+            </view>
+            
+            <view class="header-actions">
+                <button id="autoPronounceBtn" class="ghost-button" title="自動発音（クリックで切替）" aria-pressed="false" aria-label="自動発音">
+                    自動発音
+                </button>
+                <button id="keyboard-toggle" class="ghost-button" type="button" title="Virtual Keyboard" aria-label="虚拟键盘">
+                    あ
+                </button>
+                
+                <view class="mode-switcher">
+                    <button id="mode-input" class="mode-btn active" title="入力モード">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </button>
+                    <button id="mode-puzzle" class="mode-btn" title="パズルモード">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.968-.925a2.501 2.501 0 1 0-3.214 3.214c.446.166.855.497.925.968a.979.979 0 0 1-.276.837l-1.61 1.61a2.404 2.404 0 0 1-1.705.707 2.402 2.402 0 0 1-1.704-.706l-1.568-1.568a1.026 1.026 0 0 0-.877-.29c-.493.074-.84.504-1.02.968a2.5 2.5 0 1 1-3.237-3.237c.464-.18.894-.527.967-1.02a1.026 1.026 0 0 0-.289-.877l-1.568-1.568A2.402 2.402 0 0 1 1.998 12c0-.617.236-1.234.706-1.704L4.23 8.77c.24-.24.581-.353.917-.303.515.077.877.528 1.073 1.01a2.5 2.5 0 1 0 3.259-3.259c-.482-.196-.933-.558-1.01-1.073-.05-.336.062-.676.303-.917l1.525-1.525A2.402 2.402 0 0 1 12 1.998c.617 0 1.234.236 1.704.706l1.568 1.568c.23.23.556.338.877.29.493-.074.84-.504 1.02-.968a2.5 2.5 0 1 1 3.237 3.237c-.464.18-.894.527-.967 1.02z"></path>
+                        </svg>
+                    </button>
+                    <button id="mode-play" class="mode-btn" title="再生モード" style="display: none;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                    </button>
+                </view>
+                
+                <button id="headerLeaderboardBtn" class="header-leaderboard-btn" title="ランキング" style="display:none;">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M8 21h8"/>
+                        <path d="M12 17v4"/>
+                        <path d="M7 4h10v5l-5 3-5-3V4z"/>
+                        <path d="M5 9H4a2 2 0 0 1-2-2V5h3"/>
+                        <path d="M19 9h1a2 2 0 0 0 2-2V5h-3"/>
+                    </svg>
+                </button>
 
-  <view wx:if="{{currentEntry}}" class="card">
-    <view class="kanji">
-      {{currentEntry.kanji}}
-    </view>
-    <view class="card-divider"></view>
-    <view class="meaning" wx:if="{{showMeaning}}">
-      {{currentEntry.meaning}}
-    </view>
-    <view class="meaning placeholder" wx:else>
-      点击“显示释义”查看答案
-    </view>
-    <view class="card-actions">
-      <button wx:if="{{!showMeaning}}" class="action primary" bindtap="onRevealMeaning">
-        显示释义
-      </button>
-      <button class="action success" bindtap="onMarkMastered">
-        记住了
-      </button>
-      <button class="action warn" bindtap="onMarkAgain">
-        加入错题
-      </button>
-      <button class="action ghost" bindtap="onNextCard">
-        换一题
-      </button>
-    </view>
-  </view>
+                
+                <view class="user-account">
+                    
+                    <view id="guestProfile" class="user-profile" style="display: flex;">
+                        <button class="guest-menu-trigger" aria-label="メニュー">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </button>
+                        <view id="guestMenu" class="user-menu">
+                            <button id="loginButtonMenu" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                                </svg>
+                                <text>ログイン</text>
+                            </button>
+                            <view class="user-menu-divider"></view>
+                            <button id="dictionaryButtonMenuGuest" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                    <line x1="10" y1="8" x2="16" y2="8"></line>
+                                    <line x1="10" y1="12" x2="16" y2="12"></line>
+                                    <line x1="10" y1="16" x2="14" y2="16"></line>
+                                </svg>
+                                <text>辞書を切り替え</text>
+                            </button>
+                            <button id="settingsButtonMenuGuest" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"></path>
+                                </svg>
+                                <text>設定</text>
+                            </button>
+                            <button id="clearEnvButtonGuest" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 6h18"></path>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                <text>環境をクリア</text>
+                            </button>
+                            <button id="downloadOfflineGuest" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <text>オフライン用にダウンロード</text>
+                            </button>
+                            <view class="user-menu-divider"></view>
+                            <view id="helpLinkUser" class="user-menu-item" data-href="/help.html" >
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M9 9a3 3 0 1 1 5.2 2.2c-.7.7-1.2 1.1-1.2 2.3"></path>
+                                    <line x1="12" y1="17" x2="12" y2="17"></line>
+                                </svg>
+                                <text>ヘルプ</text>
+                            </view>
+                            <button id="installPWAGuest" class="user-menu-item" style="display: none;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <text>アプリをインストール</text>
+                            </button>
+                        </view>
+                    </view>
+                    
+                    <view id="userProfile" class="user-profile" style="display: none;">
+                        <image id="userAvatar" class="user-avatar" src="" alt="User" />
+                        <view id="userMenu" class="user-menu">
+                            <view class="user-menu-header">
+                                <image id="userAvatarMenu" class="user-avatar-large" src="" alt="User" />
+                                <view class="user-info">
+                                    <view id="userNameMenu" class="user-name"></view>
+                                    <view id="userEmailMenu" class="user-email"></view>
+                                </view>
+                            </view>
+                            <view class="user-menu-divider"></view>
+                            <button id="syncDataButton" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                </svg>
+                                <text>データを同期</text>
+                            </button>
+                            <button id="viewWrongWordsButton" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <text>統計</text>
+                            </button>
+                            <button id="practiceWrongWordsButton" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                                </svg>
+                                <text>錯題を練習</text>
+                            </button>
+                            
+                            <view class="user-menu-divider"></view>
+                            <button id="dictionaryButtonMenu" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                    <line x1="10" y1="8" x2="16" y2="8"></line>
+                                    <line x1="10" y1="12" x2="16" y2="12"></line>
+                                    <line x1="10" y1="16" x2="14" y2="16"></line>
+                                </svg>
+                                <text>辞書を切り替え</text>
+                            </button>
+                            <button id="settingsButtonMenu" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"></path>
+                                </svg>
+                                <text>設定</text>
+                            </button>
+                            <button id="clearEnvButton" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 6h18"></path>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                <text>環境をクリア</text>
+                            </button>
+                            <button id="downloadOfflineUser" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <text>オフライン用にダウンロード</text>
+                            </button>
+                            <view class="user-menu-divider"></view>
+                            <button id="switchAccountButton" class="user-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                                <text>アカウントを切り替え</text>
+                            </button>
+                            <button id="logoutButton" class="user-menu-item logout">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                <text>ログアウト</text>
+                            </button>
+                            <view class="user-menu-divider"></view>
+                            <view id="helpLinkUser" class="user-menu-item" data-href="/help.html" >
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M9 9a3 3 0 1 1 5.2 2.2c-.7.7-1.2 1.1-1.2 2.3"></path>
+                                    <line x1="12" y1="17" x2="12" y2="17"></line>
+                                </svg>
+                                <text>ヘルプ</text>
+                            </view>
+                            <button id="installPWAUser" class="user-menu-item" style="display: none;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <text>アプリをインストール</text>
+                            </button>
+                        </view>
+                    </view>
+                </view>
+                
+                
+            </view>
+        </view>
 
-  <view wx:else class="empty">
-    <text>{{emptyMessage || '暂无词条'}}</text>
-  </view>
+        <view class="main">
+            <view id="loading-indicator" class="loading hidden" role="status" aria-live="polite">
+                <view class="spinner" aria-hidden="true"></view>
+                <view class="loading-text">読み込み中…</view>
+            </view>
 
-  <view class="footer">
-    <view class="footer-buttons">
-      <button class="footer-btn ghost" bindtap="onClearProgress">
-        清除掌握记录
-      </button>
-      <button class="footer-btn ghost" bindtap="onClearWrongWords">
-        清空错题本
-      </button>
+            <view id="question" class="card game-card">
+                <view class="word-container">
+                    <view id="question-word" class="word" aria-live="polite"></view>
+                    <button id="tts-button" type="button" class="tts-button" title="発音を聞く" aria-label="発音を聞く">
+                        <svg class="tts-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path d="M4 9v6h3.5L12 18V6L7.5 9H4z"></path>
+                            <path d="M16 12a2 2 0 01-1.17 1.83l-.33.12v-3.9l.33.12A2 2 0 0116 12z"></path>
+                            <path d="M18.5 12a4.5 4.5 0 01-3.05 4.24l-.45.15v-1.66l.18-.08A2.9 2.9 0 0017 12a2.9 2.9 0 00-1.82-2.65l-.18-.07V7.62l.45.15A4.5 4.5 0 0118.5 12z"></path>
+                        </svg>
+                        <text class="sr-only">発音を聞く</text>
+                    </button>
+                </view>
+                <view id="question-meaning" class="meaning"></view>
+                <view id="question-reading" class="reading"></view>
+                <view class="romaji-line"><view id="question-romaji" class="romaji"></view><view data-href="/help.html#romaji"  title="Romaji Help" aria-label="Romaji Help" class="romaji-help">?</view></view>
+                <view id="empty-wrong-words" class="empty-state hidden" aria-live="polite">
+                    <view class="empty-illustration" aria-hidden="true">🫧</view>
+                    <view>まだ間違いがありません</view>
+                    <view>現在の錯題本は空です。まずは通常の辞書で練習してみましょう。</view>
+                    <button id="backToDefaultDict" class="primary-button" type="button">既定の辞書へ</button>
+                </view>
+                <form id="answer-form" class="answer-form" autocomplete="off">
+                    
+                    <view id="input-mode-container" class="mode-container">
+                        <label class="sr-only" for="answer-input">答えを入力してください</label>
+                        <input id="answer-input" type="text" inputmode="text" autocomplete="off" placeholder="" />
+                    </view>
+                    
+                    
+                    <view id="puzzle-mode-container" class="mode-container hidden">
+                        <view id="puzzle-answer-area" class="puzzle-answer-area">
+                            
+                        </view>
+                        <view id="puzzle-options-area" class="puzzle-options-area">
+                            
+                        </view>
+                    </view>
+                    
+                    <view class="actions">
+                        <button type="submit" id="answer-submit">答える</button>
+                        <button type="button" id="skip-button" class="skip-button" title="この問題をスキップ">スキップ</button>
+                        <button type="button" id="replay-button" class="hidden">重听</button>
+                        <button type="button" id="next-button" class="hidden">次へ</button>
+                    </view>
+                </form>
+            </view>
+            
+            <view class="game-progress-panel" aria-label="学習進捗" style="display: none;">
+                <view class="player-stats">
+                    <view class="player-avatar">
+                        <view class="avatar-ring level-1">
+                            <view class="avatar-icon" id="game-avatar-container">
+                                <image id="gameUserAvatar" class="game-user-avatar hidden" src="" alt="User" />
+                                <text id="gameDefaultAvatar" class="game-default-avatar">⚔️</text>
+                            </view>
+                        </view>
+                        <view class="level-badge" id="level-badge">Lv.1</view>
+                    </view>
+                    
+                    <view class="player-info">
+                        <view class="exp-container">
+                            <view class="exp-header">
+                                <text class="exp-label">経験値</text>
+                                <button id="progress-reset" class="progress-reset-btn" type="button" title="進捗をリセット">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                                        <path d="M3 3v5h5"></path>
+                                    </svg>
+                                </button>
+                            </view>
+                            <view class="exp-bar-wrapper">
+                                <view id="exp-bar" class="exp-bar" role="progressbar">
+                                    <view id="exp-fill" class="exp-bar-fill"></view>
+                                    <view class="exp-bar-shine"></view>
+                                </view>
+                                <view class="exp-text" id="exp-text">0 / 100</view>
+                            </view>
+                        </view>
+                        
+                        <view class="stats-grid">
+                            <view class="stat-item stat-correct">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                                <text class="stat-value" id="correct-stat">0</text>
+                            </view>
+                            <view class="stat-item stat-wrong">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                                </svg>
+                                <text class="stat-value" id="wrong-stat">0</text>
+                            </view>
+                            <view class="stat-item stat-combo">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                                </svg>
+                                <text class="stat-value" id="combo-stat">0</text>
+                            </view>
+                            <view class="stat-item stat-total">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                                <text class="stat-value" id="total-stat">0</text>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+                
+                <view class="progress-text-info" id="progress-text-info">
+                    <text id="progress-fraction">0 / 0</text>
+                    <text class="progress-percentage" id="progress-percentage">0%</text>
+                    <text id="dictionary-name" class="dictionary-name"></text>
+                </view>
+            </view>
+        </view>
+
+        <view class="footer">
+            © <view data-href="https://iamcheyan.com/"  rel="noreferrer noopener">Cheyan</view> All Rights Reserved ·
+            <view data-href="https://github.com/iamcheyan/terebi"  rel="noreferrer noopener" class="footer-link" aria-label="GitHub" title="GitHub">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.42c.58.11.8-.25.8-.56v-2.02c-3.26.71-3.95-1.4-3.95-1.4-.53-1.36-1.3-1.72-1.3-1.72-1.06-.72.08-.71.08-.71 1.18.08 1.8 1.21 1.8 1.21 1.04 1.79 2.73 1.27 3.4.97.11-.76.41-1.27.75-1.56-2.6-.3-5.33-1.3-5.33-5.8 0-1.28.46-2.32 1.21-3.14-.12-.3-.52-1.52.11-3.17 0 0 .98-.31 3.2 1.2.94-.26 1.95-.39 2.95-.39s2.01.13 2.95.39c2.22-1.51 3.19-1.2 3.19-1.2.64 1.65.24 2.87.12 3.17.76.82 1.21 1.86 1.21 3.14 0 4.51-2.73 5.5-5.34 5.79.42.36.8 1.08.8 2.18v3.23c0 .31.21.68.81.56A11.5 11.5 0 0 0 12 .5Z"></path></svg>
+                <text class="footer-link-label">GitHub</text>
+            </view>
+        </view>
     </view>
-    <view class="feedback" wx:if="{{feedback}}">
-      {{feedback}}
+
+    
+    <view id="alerts" class="alerts" aria-live="polite"></view>
+
+    <view id="modal-backdrop" class="modal-backdrop hidden" data-close="modal"></view>
+
+    <view id="dictionary-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="dictionary-modal-title">
+        <view class="modal-header">
+            <view id="dictionary-modal-title">辞書選択</view>
+            <button type="button" class="modal-close" data-close="modal" aria-label="閉じる">×</button>
+        </view>
+        <view class="modal-body dictionary-modal-body">
+            <view class="dictionary-select-group">
+                <label for="dictionary-select">利用する辞書を選択</label>
+                <select id="dictionary-select"></select>
+            </view>
+            <view class="voice-selection">
+                <label for="voice-select">音声選択:</label>
+                <select id="voice-select">
+                    <option value="">読み込み中...</option>
+                </select>
+                <button type="button" id="voice-preview" class="ghost-button" title="選択中の音声で試聴します" aria-label="音声を試聴">▶︎ 試聴</button>
+            </view>
+            <view class="rate-control">
+                <label for="rate-slider">読み上げ速度:</label>
+                <view class="rate-control__track">
+                    <input id="rate-slider" type="range" min="0.5" max="2" step="0.1" value="1" />
+                    <text id="rate-value">1.0x</text>
+                </view>
+            </view>
+        </view>
+        <view class="modal-footer">
+            <button type="button" class="ghost-button" data-close="modal">キャンセル</button>
+            <button type="button" id="dictionary-save">確認</button>
+        </view>
     </view>
-  </view>
+
+    <view id="settings-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+        <view class="modal-header">
+            <view id="settings-modal-title">設定</view>
+            <button type="button" class="modal-close" data-close="modal" aria-label="閉じる">×</button>
+        </view>
+        <view class="modal-body">
+            <view class="settings-checkbox-grid">
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-reading" checked />
+                    読み方を表示する
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-romaji" checked />
+                    ローマ字を表示する
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-placeholder" checked />
+                    入力ヒントを表示する
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-katakana" />
+                    カタカナにも振り仮名を表示する
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-furigana" checked />
+                    振り仮名を表示する
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-auto-pronunciation" />
+                    自動発音
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-combo-sound" checked />
+                    連撃音效
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-sound-effects" checked />
+                    効果音（正解/報酬）
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="toggle-haptics" checked />
+                    触感（対応デバイス）
+                </label>
+                <view class="sound-test-section" style="display: none;">
+                    <button type="button" id="test-combo-sound" class="ghost-button">
+                        🔊 音效テスト
+                    </button>
+                    <view class="combo-sound-tests">
+                        <view>連撃音效テスト</view>
+                        <view class="combo-test-buttons">
+                            <button type="button" class="combo-test-btn" data-combo="3">3連撃 🔥</button>
+                            <button type="button" class="combo-test-btn" data-combo="5">5連撃 ✨</button>
+                            <button type="button" class="combo-test-btn" data-combo="10">10連撃 🎉</button>
+                            <button type="button" class="combo-test-btn" data-combo="20">20連撃 🌟</button>
+                            <button type="button" class="combo-test-btn" data-combo="30">30連撃 🦄</button>
+                            <button type="button" class="combo-test-btn" data-combo="50">50連撃 🏆</button>
+                            <button type="button" class="combo-test-btn" data-combo="60">60連撃 🏆</button>
+                            <button type="button" class="combo-test-btn" data-combo="70">70連撃 🏆</button>
+                            <button type="button" class="combo-test-btn" data-combo="80">80連撃 🏆</button>
+                            <button type="button" class="combo-test-btn" data-combo="90">90連撃 🏆</button>
+                            <button type="button" class="combo-test-btn" data-combo="100">100連撃 👑</button>
+                            <button type="button" class="combo-test-btn" data-combo="200">200連撃 💎</button>
+                            <button type="button" class="combo-test-btn" data-combo="300">300連撃 🚀</button>
+                            <button type="button" class="combo-test-btn" data-combo="500">500連撃 🌌</button>
+                            <button type="button" class="combo-test-btn" data-combo="1000">1000連撃 🧙‍♂️</button>
+                        </view>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <view class="modal-footer">
+            <button type="button" class="ghost-button" data-close="modal">キャンセル</button>
+            <button type="button" id="settings-save">確認</button>
+        </view>
+    </view>
+
+    
+    <view id="wrong-words-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="wrong-words-modal-title">
+        <view class="modal-header">
+            <view id="wrong-words-modal-title">統計</view>
+            <button type="button" class="modal-close" data-close="modal" aria-label="閉じる">×</button>
+        </view>
+        <view class="modal-body wrong-words-body">
+            <view class="wrong-words-stats">
+                <view class="stat-card stat-correct">
+                    <view class="stat-number" id="correct-count">0</view>
+                    <view class="stat-label">正解数</view>
+                </view>
+                <view class="stat-card stat-wrong">
+                    <view class="stat-number" id="wrong-count">0</view>
+                    <view class="stat-label">錯題数</view>
+                </view>
+            </view>
+            <view class="wrong-words-actions">
+                <button type="button" id="practice-wrong-words" class="ghost-button primary-button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    錯題を練習
+                </button>
+                <button type="button" id="clear-all-wrong-words" class="ghost-button danger-button" title="すべてクリア">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+            </view>
+            <view id="wrong-words-list" class="wrong-words-list">
+                
+            </view>
+            <view id="wrong-words-pagination" class="pagination hidden">
+                <button id="prev-page" class="pagination-btn" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    前へ
+                </button>
+                <view class="pagination-info">
+                    <text id="current-page">1</text> / <text id="total-pages">1</text>
+                </view>
+                <button id="next-page" class="pagination-btn" disabled>
+                    次へ
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            </view>
+        </view>
+    </view>
+
+    
+    <view id="offline-download-modal" class="modal hidden" role="dialog" aria-modal="true">
+        <view class="modal-header">
+            <view>オフライン使用</view>
+            <button type="button" class="modal-close" data-close="offline-modal" aria-label="閉じる">×</button>
+        </view>
+        <view class="modal-body">
+            <view style="font-size: 14px; color: var(--text-secondary, #64748b); margin-bottom: 16px;">
+                すべてのリソースをダウンロードして、完全にオフラインで使用できるようにします。
+            </view>
+            <view id="offline-status" style="margin: 16px 0; font-size: 14px; text-align: center; min-height: 24px;">
+                
+            </view>
+            <button type="button" id="download-for-offline" class="ghost-button" style="width: 100%; margin-top: 8px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                オフライン用にダウンロード
+            </button>
+        </view>
+    </view>
+
+    
+    <view id="leaderboard-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="leaderboard-modal-title">
+                <view class="modal-header">
+            <view id="leaderboard-modal-title">ランキング</view>
+            <button type="button" class="modal-close" data-close="modal" aria-label="閉じる">×</button>
+        </view>
+        <view class="modal-body leaderboard-body">
+            <view class="leaderboard-stats">
+                <view class="leaderboard-stat-card">
+                    <view class="stat-number" id="my-rank">-</view>
+                    <view class="stat-label">自分の順位</view>
+                </view>
+                <view class="leaderboard-stat-card">
+                    <view class="stat-number" id="my-score">0</view>
+                    <view class="stat-label">自分のスコア</view>
+                </view>
+                <view class="leaderboard-stat-card">
+                    <view class="stat-number" id="total-players">0</view>
+                    <view class="stat-label">プレイヤー数</view>
+                </view>
+            </view>
+            
+            <view class="leaderboard-actions" style="display:none;"></view>
+            
+            <view class="leaderboard-list" id="leaderboard-list">
+                <view class="leaderboard-loading">
+                    <view class="spinner" style="width: 24px; height: 24px; margin: 0 auto;"></view>
+                    <view>読み込み中...</view>
+                </view>
+            </view>
+            <view style="margin-top: 8px; text-align: right;">
+                <button type="button" id="show-scoring-rules" class="ghost-button" title="計算ルール">計算ルール</button>
+            </view>
+            
+            <view class="leaderboard-pagination" id="leaderboard-pagination" style="display: none;">
+                <button id="prev-leaderboard-page" class="pagination-btn" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    前へ
+                </button>
+                <view class="pagination-info">
+                    <text id="current-leaderboard-page">1</text> / <text id="total-leaderboard-pages">1</text>
+                </view>
+                <button id="next-leaderboard-page" class="pagination-btn" disabled>
+                    次へ
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            </view>
+        </view>
+    </view>
+
+    
+    <view id="pwa-install-modal" class="modal hidden" role="dialog" aria-modal="true">
+        <view class="modal-header">
+            <view>アプリをインストール</view>
+            <button type="button" class="modal-close" data-close="pwa-modal" aria-label="閉じる">×</button>
+        </view>
+        <view class="modal-body">
+            <view id="pwa-install-content">
+                <view class="pwa-step" id="pwa-step-1">
+                    <view class="pwa-icon">📱</view>
+                    <view>キャッシュをクリア中...</view>
+                    <view class="pwa-progress">
+                        <view class="pwa-progress-bar" id="pwa-progress-1" style="width: 0%"></view>
+                    </view>
+                    <view class="pwa-progress-text" id="pwa-progress-text-1">準備中...</view>
+                </view>
+                <view class="pwa-step hidden" id="pwa-step-2">
+                    <view class="pwa-icon">⬇️</view>
+                    <view>リソースをダウンロード中...</view>
+                    <view class="pwa-progress">
+                        <view class="pwa-progress-bar" id="pwa-progress-2" style="width: 0%"></view>
+                    </view>
+                    <view class="pwa-progress-text" id="pwa-progress-text-2">0 / 0 ファイル</view>
+                </view>
+                <view class="pwa-step hidden" id="pwa-step-3">
+                    <view class="pwa-icon">✅</view>
+                    <view>インストール完了！</view>
+                    <view>アプリをホーム画面に追加できます</view>
+                    <button type="button" id="pwa-add-to-home" class="primary-button" style="max-width: 100%; margin-top: 16px;">
+                        ホーム画面に追加
+                    </button>
+                </view>
+                <view class="pwa-step hidden" id="pwa-step-error">
+                    <view class="pwa-icon">❌</view>
+                    <view>インストールに失敗しました</view>
+                    <view id="pwa-error-message"></view>
+                    <button type="button" class="ghost-button" data-close="pwa-modal" style="margin-top: 16px;">
+                        閉じる
+                    </button>
+                </view>
+            </view>
+        </view>
+    </view>
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    <view id="keyboard-container" class="keyboard-container">
+        
+        <view id="virtual-keyboard" class="virtual-keyboard show">
+        <view class="keyboard-body">
+            
+            <view class="keyboard-row">
+                <button class="key" data-key="q">q</button>
+                <button class="key" data-key="w">w</button>
+                <button class="key" data-key="e">e</button>
+                <button class="key" data-key="r">r</button>
+                <button class="key" data-key="t">t</button>
+                <button class="key" data-key="y">y</button>
+                <button class="key" data-key="u">u</button>
+                <button class="key" data-key="i">i</button>
+                <button class="key" data-key="o">o</button>
+                <button class="key" data-key="p">p</button>
+            </view>
+            
+            <view class="keyboard-row">
+                <button class="key" data-key="a">a</button>
+                <button class="key" data-key="s">s</button>
+                <button class="key" data-key="d">d</button>
+                <button class="key" data-key="f">f</button>
+                <button class="key" data-key="g">g</button>
+                <button class="key" data-key="h">h</button>
+                <button class="key" data-key="j">j</button>
+                <button class="key" data-key="k">k</button>
+                <button class="key" data-key="l">l</button>
+            </view>
+            
+            <view class="keyboard-row">
+                <button class="key key-kana-toggle" data-key="kana-toggle">
+                    <text class="kana-indicator">カタ</text>
+                </button>
+                <button class="key" data-key="z">z</button>
+                <button class="key" data-key="x">x</button>
+                <button class="key" data-key="c">c</button>
+                <button class="key" data-key="v">v</button>
+                <button class="key" data-key="b">b</button>
+                <button class="key" data-key="n">n</button>
+                <button class="key" data-key="m">m</button>
+                <button class="key key-backspace" data-key="backspace">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/>
+                        <path d="M18 9l-6 6"/>
+                        <path d="M12 9l6 6"/>
+                    </svg>
+                </button>
+            </view>
+            
+            <view class="keyboard-row keyboard-controls">
+                <button class="key key-flick-toggle" data-key="flick-toggle" title="フリック入力">
+                    <text class="flick-icon">フリック</text>
+                </button>
+                <button class="key key-space" data-key="space">
+                    <text class="space-text">Space</text>
+                    <text class="space-lang">A</text>
+                </button>
+                <button class="key key-enter" data-key="enter">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 10l-5 5 5 5"/>
+                        <path d="M20 4v7a4 4 0 0 1-4 4H4"/>
+                    </svg>
+                </button>
+            </view>
+        </view>
+        </view>
+
+        
+        <view id="flick-keyboard" class="flick-keyboard hidden">
+        <view class="keyboard-body flick-keyboard-body">
+            <view class="flick-keyboard-layout">
+                
+                <view class="flick-sidebar">
+                    
+                    <button class="key flick-function-key flick-escape" data-key="flick-escape" title="取消选择">
+                        <text class="escape-text">Esc</text>
+                    </button>
+                    
+                    <button class="key flick-function-key flick-katakana" data-key="flick-katakana" title="片假名模式">
+                        <text class="katakana-text">カタカナ</text>
+                    </button>
+                    
+                    <button class="key flick-function-key flick-back" data-key="flick-back" title="返回默认键盘">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5"/>
+                            <path d="M12 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                </view>
+                
+                
+                <view class="flick-keys-area">
+                    
+                    <view class="keyboard-row flick-row">
+                        <button class="key flick-key" data-flick="あ" data-flick-left="い" data-flick-up="う" data-flick-right="え" data-flick-down="お">あ</button>
+                        <button class="key flick-key" data-flick="か" data-flick-left="き" data-flick-up="く" data-flick-right="け" data-flick-down="こ">か</button>
+                        <button class="key flick-key" data-flick="さ" data-flick-left="し" data-flick-up="す" data-flick-right="せ" data-flick-down="そ">さ</button>
+                    </view>
+                    
+                    <view class="keyboard-row flick-row">
+                        <button class="key flick-key" data-flick="た" data-flick-left="ち" data-flick-up="つ" data-flick-right="て" data-flick-down="と">た</button>
+                        <button class="key flick-key" data-flick="な" data-flick-left="に" data-flick-up="ぬ" data-flick-right="ね" data-flick-down="の">な</button>
+                        <button class="key flick-key" data-flick="は" data-flick-left="ひ" data-flick-up="ふ" data-flick-right="へ" data-flick-down="ほ">は</button>
+                    </view>
+                    
+                    <view class="keyboard-row flick-row">
+                        <button class="key flick-key" data-flick="ま" data-flick-left="み" data-flick-up="む" data-flick-right="め" data-flick-down="も">ま</button>
+                        <button class="key flick-key" data-flick="や" data-flick-up="ゆ" data-flick-down="よ">や</button>
+                        <button class="key flick-key" data-flick="ら" data-flick-left="り" data-flick-up="る" data-flick-right="れ" data-flick-down="ろ">ら</button>
+                    </view>
+                    
+                    <view class="keyboard-row flick-row">
+                        <button class="key flick-key flick-voicing" data-flick="小">小</button>
+                        <button class="key flick-key" data-flick="わ" data-flick-left="を" data-flick-up="ん" data-flick-right="ー">わ</button>
+                        <button class="key flick-key" data-flick="ー">ー</button>
+                    </view>
+                </view>
+                
+                
+                <view class="flick-right-sidebar">
+                    
+                    <button class="key flick-function-key flick-delete" data-key="flick-delete" title="删除">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                            <path d="M18 9l-6 6"></path>
+                            <path d="M12 9l6 6"></path>
+                        </svg>
+                    </button>
+                    
+                    <button class="key flick-function-key flick-space" data-key="flick-space" title="Space">
+                        <text class="space-text">Space</text>
+                    </button>
+                    
+                    <button class="key flick-function-key flick-submit" data-key="flick-submit" >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 10l-5 5 5 5"></path>
+                            <path d="M20 4v7a4 4 0 0 1-4 4H4"></path>
+                        </svg>
+                    </button>
+                </view>
+            </view>
+        </view>
+        </view>
+    </view>
 </view>
