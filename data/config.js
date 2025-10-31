@@ -1,4 +1,4 @@
-const config = require('../static/config.json');
+const config = require('../static/config.js');
 
 module.exports = {
   dictionaries: config.dictionaries || [],

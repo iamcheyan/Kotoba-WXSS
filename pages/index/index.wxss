@@ -1,4 +1,11 @@
 .hidden { display: none !important; }
+/* 清除 wx-button 默认宽度和居中样式 */
+wx-button:not([size=mini]) {
+    margin-left: unset !important;
+    margin-right: unset !important;
+    width: unset !important;
+    padding: 0;
+}
 
 /* === 自定义滚动条样式 === */
 ::-webkit-scrollbar {
@@ -95,9 +102,9 @@
 
 .body {
     margin: 0;
-    background: linear-gradient(180deg, #3b4665, #2c344d);
     color: #5b3324;
     min-height: 100vh;
+    background: linear-gradient(135deg, #fff6e1, #f4deb3);
 }
 
 .darkmode--activated {
@@ -118,10 +125,7 @@
 
 .theme-magic .app {
     position: relative;
-    background: linear-gradient(135deg, #fff6e1, #f4deb3);
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-    /* margin: 50px auto; */
 }
 
 .theme-magic .app::before {
@@ -544,8 +548,8 @@
 .theme-magic .modal-close {
     background: linear-gradient(135deg, rgba(255, 186, 110, 0.9), rgba(255, 120, 102, 0.95));
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
+    width: 36px !important;
+    height: 36px !important;
     color: #fff5ea;
     border: none;
     box-shadow: inset 0 1px 0 rgba(255, 232, 207, 0.8),
@@ -696,31 +700,29 @@ a:hover {
     font-weight: 500;
 }
 
-.app-header {
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.header-resources {
-    order: 3;
-    width: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
-    padding: 8px 0 0;
-    gap: 10px;
-}
-
-.resource-item {
-    min-width: 110px;
-}
-
-.book-actions {
-    flex-direction: column;
-}
-
-.book-action-btn {
-    width: 100%;
-    text-align: center;
+@media (max-width: 768px) {
+    .app-header {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .header-resources {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        padding: 8px 0 0;
+        gap: 10px;
+    }
+    .resource-item {
+        min-width: 110px;
+    }
+    .book-actions {
+        flex-direction: column;
+    }
+    .book-action-btn {
+        width: 100%;
+        text-align: center;
+    }
 }
 
 .book-actions {
@@ -1665,7 +1667,7 @@ a:hover {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.9));
     border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 50%;
-    width: 32px;
+    width: 32px ;
     height: 32px;
     display: flex;
     align-items: center;
@@ -1792,7 +1794,6 @@ ruby rt {
     border: 1px solid rgba(255, 255, 255, 0.3);
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.9));
     color: inherit;
-    width: 100%;
     box-shadow: 
         inset 0 2px 4px rgba(255, 255, 255, 0.6),
         inset 0 -2px 4px rgba(0, 0, 0, 0.05),
@@ -2481,7 +2482,7 @@ image.png {
     background: rgba(15, 23, 42, 0.5);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    z-index: 9998;
+    /* z-index: 9998; */
     transition: opacity 0.2s 
 ease, backdrop-filter 0.2s 
 ease;
@@ -2629,40 +2630,40 @@ ease;
     width: min(calc(100% - 48px), 520px);
 }
 
-.dictionary-modal-.body {
+.dictionary-modal-body {
     display: grid;
     gap: 18px;
 }
 
 .dictionary-select-group,
-.dictionary-modal-.body .voice-selection,
-.dictionary-modal-.body .rate-control {
+.dictionary-modal-body .voice-selection,
+.dictionary-modal-body .rate-control {
     display: grid;
     gap: 8px;
 }
 
-.dictionary-modal-.body .voice-selection {
+.dictionary-modal-body .voice-selection {
     gap: 10px;
 }
 
-.dictionary-modal-.body .voice-selection select {
+.dictionary-modal-body .voice-selection select {
     width: 100%;
 }
 
-.dictionary-modal-.body .voice-selection .ghost-button {
+.dictionary-modal-body .voice-selection .ghost-button {
     justify-self: start;
     padding: 8px 16px;
     border-radius: 12px;
     font-weight: 600;
 }
 
-.dictionary-modal-.body .rate-control__track {
+.dictionary-modal-body .rate-control__track {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.dictionary-modal-.body .rate-control input[type="range"] {
+.dictionary-modal-body .rate-control input[type="range"] {
     flex: 1;
     -webkit-appearance: none;
     appearance: none;
@@ -2678,7 +2679,7 @@ ease;
     cursor: pointer;
 }
 
-.dictionary-modal-.body .rate-control input[type="range"]::-webkit-slider-thumb {
+.dictionary-modal-body .rate-control input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 20px;
@@ -2702,7 +2703,7 @@ ease;
         0 4px 12px rgba(79, 70, 229, 0.4);
 }
 
-.dictionary-modal-.body .rate-control input[type="range"]::-moz-range-thumb {
+.dictionary-modal-body .rate-control input[type="range"]::-moz-range-thumb {
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -2716,11 +2717,26 @@ ease;
     transition: all 0.2s ease;
 }
 
-.dictionary-modal-.body .rate-control span {
+.dictionary-modal-body .rate-control span {
     min-width: 3.5ch;
     text-align: right;
     font-weight: 600;
 }
+
+/* 模拟下拉选择的展示盒 */
+.picker-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.85), rgba(248, 250, 252, 0.85));
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 14px rgba(149, 73, 36, 0.06), inset 0 2px 5px rgba(255,255,255,.6);
+    color: #6b4a35;
+}
+.picker-display .picker-value { font-weight: 600; }
+.picker-display .select-arrow { color: #8c5b3e; opacity: .7; font-size: 16px; margin-left: 10px; }
 
 #settings-modal {
     max-width: 620px;
@@ -2734,6 +2750,13 @@ ease;
 .settings-checkbox-grid {
     display: grid;
     gap: 12px;
+}
+
+@media (min-width: 560px) {
+    .settings-checkbox-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px 18px;
+    }
 }
 
 .settings-checkbox-grid .checkbox {
@@ -2805,6 +2828,15 @@ ease;
     border: none;
     display: grid;
     gap: 14px;
+}
+
+@media (min-width: 600px) {
+    .theme-options {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .theme-option {
+        height: 100%;
+    }
 }
 
 .theme-options legend {
@@ -3027,6 +3059,13 @@ ease;
 .leaderboard-actions .primary-button {
     width: 100%;
 }
+
+@media (max-width: 640px) {
+    .leaderboard-actions .ghost-button,
+    .leaderboard-actions .primary-button {
+        width: 100%;
+    }
+}
 .leaderboard-score { font-size: 18px; font-weight: bold; color: #ff9040; }
 
 .leaderboard-loading { text-align: center; padding: 40px 20px; color: #8c5b3e; }
@@ -3042,6 +3081,12 @@ ease;
 .leaderboard-stats { gap: 12px; }
 .leaderboard-actions { flex-direction: column; }
 .leaderboard-actions .ghost-button { flex: none; }
+
+@media (max-width: 640px) {
+    .leaderboard-stats { gap: 12px; }
+    .leaderboard-actions { flex-direction: column; }
+    .leaderboard-actions .ghost-button { flex: none; }
+}
 
 /* Header Leaderboard Entry Button */
 .header-leaderboard-btn {
@@ -3244,17 +3289,18 @@ ease;
 
 /* 未登录菜单触发器 */
 .guest-menu-trigger {
-    width: 32px;
+    width: 32px ;
     height: 32px;
     border-radius: 50%;
     /* padding: 0 10px;image.png */
     cursor: pointer;
     border: 2px solid rgba(232, 152, 92, 0.45);
     background: rgba(255, 250, 240, 0.92);
-    display: flex;
+    display: inline-block;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    padding: 0 !important;
 }
 
 .guest-menu-trigger:hover {
@@ -3967,7 +4013,7 @@ ease;
     }
 
     .mode-btn {
-        width: 32px;
+        width: 32px ;
         height: 32px;
     }
     
@@ -4724,7 +4770,6 @@ ease;
     .pagination-btn { padding: 10px 12px; }
 
 /* 极小屏幕（<=360px）：进一步堆叠 */
-    .answer-form .actions { grid-template-columns: 1fr; }
     .leaderboard-modal .summary-cards { grid-template-columns: 1fr; }
     .stats-grid { grid-template-columns: 1fr; }
 
@@ -4776,6 +4821,14 @@ ease;
 }
 
 /* PC设备上隐藏键盘切换按钮和键盘容器 */
+@media (min-width: 769px) {
+    .keyboard-toggle {
+        display: none !important;
+    }
+    .keyboard-container {
+        display: none !important;
+    }
+}
 .keyboard-toggle:hover {
     background: rgba(0, 0, 0, 0.2);
     transform: translateY(-50%) scale(1.05);
@@ -4835,7 +4888,7 @@ ease;
     background: rgba(255, 255, 255, 0.1);
 }
 
-.keyboard-.body {
+.keyboard-body {
     padding: 16px 0;
     max-height: 60vh;
     background: #000000;
@@ -5007,6 +5060,7 @@ ease;
 }
 
 /* 移动端虚拟键盘样式 */
+@media (max-width: 639px) {
     .keyboard-toggle {
         right: 4px;
         padding: 6px;
@@ -5016,7 +5070,7 @@ ease;
         max-height: 50vh;
     }
     
-    .keyboard-.body {
+    .keyboard-body {
         padding: 5px 10px;
         max-height: 40vh;
     }
@@ -5047,6 +5101,7 @@ ease;
     .key-enter {
         min-width: 79px;
     }
+}
 
 /* === フリック键盘样式 === */
 .flick-keyboard {
@@ -5085,7 +5140,7 @@ ease;
 }
 
 /* フリック键盘主体 */
-.flick-keyboard-.body {
+.flick-keyboard-body {
     padding: 16px 0;
     max-height: 60vh;
     background: #000000;
@@ -5397,7 +5452,7 @@ ease;
 }
 
 /* 移动端适配 */
-    .flick-keyboard-.body {
+    .flick-keyboard-body {
         padding: 6px 10px;
         gap: 3px;
     }

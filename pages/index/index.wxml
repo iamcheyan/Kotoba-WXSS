@@ -15,36 +15,24 @@
                     自動発音
                 </button>
                 <button id="keyboard-toggle" class="ghost-button" type="button" title="Virtual Keyboard" aria-label="虚拟键盘">
-                    あ
+                    A
                 </button>
                 
                 <view class="mode-switcher">
-                    <button id="mode-input" class="mode-btn active" title="入力モード">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                    </button>
-                    <button id="mode-puzzle" class="mode-btn" title="パズルモード">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.968-.925a2.501 2.501 0 1 0-3.214 3.214c.446.166.855.497.925.968a.979.979 0 0 1-.276.837l-1.61 1.61a2.404 2.404 0 0 1-1.705.707 2.402 2.402 0 0 1-1.704-.706l-1.568-1.568a1.026 1.026 0 0 0-.877-.29c-.493.074-.84.504-1.02.968a2.5 2.5 0 1 1-3.237-3.237c.464-.18.894-.527.967-1.02a1.026 1.026 0 0 0-.289-.877l-1.568-1.568A2.402 2.402 0 0 1 1.998 12c0-.617.236-1.234.706-1.704L4.23 8.77c.24-.24.581-.353.917-.303.515.077.877.528 1.073 1.01a2.5 2.5 0 1 0 3.259-3.259c-.482-.196-.933-.558-1.01-1.073-.05-.336.062-.676.303-.917l1.525-1.525A2.402 2.402 0 0 1 12 1.998c.617 0 1.234.236 1.704.706l1.568 1.568c.23.23.556.338.877.29.493-.074.84-.504 1.02-.968a2.5 2.5 0 1 1 3.237 3.237c-.464.18-.894.527-.967 1.02z"></path>
-                        </svg>
-                    </button>
-                    <button id="mode-play" class="mode-btn" title="再生モード" style="display: none;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                        </svg>
-                    </button>
+                <button id="mode-input" class="mode-btn active" title="入力モード">
+                    <image src="../../static/icons/mode-input.png" style="width:18px;height:18px" />
+                </button>
+                <button id="mode-puzzle" class="mode-btn" title="パズルモード">
+                    <image src="../../static/icons/mode-puzzle.png" style="width:18px;height:18px" />
+                </button>
+                <button id="mode-play" class="mode-btn" title="再生モード" style="display: none;">
+                    <image src="../../static/icons/mode-play.png" style="width:18px;height:18px" />
+                </button>
                 </view>
                 
+                <button id="open-settings" class="ghost-button" bindtap="openDictionaryModal">設定</button>
                 <button id="headerLeaderboardBtn" class="header-leaderboard-btn" title="ランキング" style="display:none;">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M8 21h8"/>
-                        <path d="M12 17v4"/>
-                        <path d="M7 4h10v5l-5 3-5-3V4z"/>
-                        <path d="M5 9H4a2 2 0 0 1-2-2V5h3"/>
-                        <path d="M19 9h1a2 2 0 0 0 2-2V5h-3"/>
-                    </svg>
+                    <image class="icon" src="../../static/icons/leaderboard.png" style="width:18px;height:18px" />
                 </button>
 
                 
@@ -52,10 +40,7 @@
                     
                     <view id="guestProfile" class="user-profile" style="display: flex;">
                         <button class="guest-menu-trigger" aria-label="メニュー">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
+                            <image src="../../static/icons/user.png" style="width:20px;height:20px" />
                         </button>
                         <view id="guestMenu" class="user-menu">
                             <button id="loginButtonMenu" class="user-menu-item">
@@ -241,19 +226,15 @@
 
             <view id="question" class="card game-card">
                 <view class="word-container">
-                    <view id="question-word" class="word" aria-live="polite"></view>
+                    <view id="question-word" class="word" aria-live="polite">{{questionWord}}</view>
                     <button id="tts-button" type="button" class="tts-button" title="発音を聞く" aria-label="発音を聞く">
-                        <svg class="tts-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                            <path d="M4 9v6h3.5L12 18V6L7.5 9H4z"></path>
-                            <path d="M16 12a2 2 0 01-1.17 1.83l-.33.12v-3.9l.33.12A2 2 0 0116 12z"></path>
-                            <path d="M18.5 12a4.5 4.5 0 01-3.05 4.24l-.45.15v-1.66l.18-.08A2.9 2.9 0 0017 12a2.9 2.9 0 00-1.82-2.65l-.18-.07V7.62l.45.15A4.5 4.5 0 0118.5 12z"></path>
-                        </svg>
+                        <image class="tts-icon" src="../../static/icons/tts.png" style="width:18px;height:18px" />
                         <text class="sr-only">発音を聞く</text>
                     </button>
                 </view>
-                <view id="question-meaning" class="meaning"></view>
-                <view id="question-reading" class="reading"></view>
-                <view class="romaji-line"><view id="question-romaji" class="romaji"></view><view data-href="/help.html#romaji"  title="Romaji Help" aria-label="Romaji Help" class="romaji-help">?</view></view>
+                <view id="question-meaning" class="meaning">{{questionMeaning}}</view>
+                <view id="question-reading" class="reading">{{questionReading}}</view>
+                <view class="romaji-line"><view id="question-romaji" class="romaji">{{questionRomaji}}</view><view class="romaji-help">?</view></view>
                 <view id="empty-wrong-words" class="empty-state hidden" aria-live="polite">
                     <view class="empty-illustration" aria-hidden="true">🫧</view>
                     <view>まだ間違いがありません</view>
@@ -278,8 +259,8 @@
                     </view>
                     
                     <view class="actions">
-                        <button type="submit" id="answer-submit">答える</button>
-                        <button type="button" id="skip-button" class="skip-button" title="この問題をスキップ">スキップ</button>
+                        <button type="submit" id="answer-submit" bindtap="onSubmitAnswer">答える</button>
+                        <button type="button" id="skip-button" class="skip-button" title="この問題をスキップ" bindtap="nextQuestion">スキップ</button>
                         <button type="button" id="replay-button" class="hidden">重听</button>
                         <button type="button" id="next-button" class="hidden">次へ</button>
                     </view>
@@ -303,10 +284,7 @@
                             <view class="exp-header">
                                 <text class="exp-label">経験値</text>
                                 <button id="progress-reset" class="progress-reset-btn" type="button" title="進捗をリセット">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-                                        <path d="M3 3v5h5"></path>
-                                    </svg>
+                                    <image src="../../static/icons/reset.png" style="width:14px;height:14px" />
                                 </button>
                             </view>
                             <view class="exp-bar-wrapper">
@@ -320,30 +298,19 @@
                         
                         <view class="stats-grid">
                             <view class="stat-item stat-correct">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                </svg>
+                                <image src="../../static/icons/stat-correct.png" style="width:18px;height:18px" />
                                 <text class="stat-value" id="correct-stat">0</text>
                             </view>
                             <view class="stat-item stat-wrong">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="15" y1="9" x2="9" y2="15"></line>
-                                    <line x1="9" y1="9" x2="15" y2="15"></line>
-                                </svg>
+                                <image src="../../static/icons/stat-wrong.png" style="width:18px;height:18px" />
                                 <text class="stat-value" id="wrong-stat">0</text>
                             </view>
                             <view class="stat-item stat-combo">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
-                                </svg>
+                                <image src="../../static/icons/stat-combo.png" style="width:18px;height:18px" />
                                 <text class="stat-value" id="combo-stat">0</text>
                             </view>
                             <view class="stat-item stat-total">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                                </svg>
+                                <image src="../../static/icons/stat-total.png" style="width:18px;height:18px" />
                                 <text class="stat-value" id="total-stat">0</text>
                             </view>
                         </view>
@@ -351,18 +318,10 @@
                 </view>
                 
                 <view class="progress-text-info" id="progress-text-info">
-                    <text id="progress-fraction">0 / 0</text>
-                    <text class="progress-percentage" id="progress-percentage">0%</text>
-                    <text id="dictionary-name" class="dictionary-name"></text>
+                    <text id="progress-fraction">{{progressFraction}}</text>
+                    <text class="progress-percentage" id="progress-percentage">{{progressPercentage}}</text>
+                    <text id="dictionary-name" class="dictionary-name" bindtap="pickDictionary">{{dictionaryName}}</text>
                 </view>
-            </view>
-        </view>
-
-        <view class="footer">
-            © <view data-href="https://iamcheyan.com/"  rel="noreferrer noopener">Cheyan</view> All Rights Reserved ·
-            <view data-href="https://github.com/iamcheyan/terebi"  rel="noreferrer noopener" class="footer-link" aria-label="GitHub" title="GitHub">
-                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.42c.58.11.8-.25.8-.56v-2.02c-3.26.71-3.95-1.4-3.95-1.4-.53-1.36-1.3-1.72-1.3-1.72-1.06-.72.08-.71.08-.71 1.18.08 1.8 1.21 1.8 1.21 1.04 1.79 2.73 1.27 3.4.97.11-.76.41-1.27.75-1.56-2.6-.3-5.33-1.3-5.33-5.8 0-1.28.46-2.32 1.21-3.14-.12-.3-.52-1.52.11-3.17 0 0 .98-.31 3.2 1.2.94-.26 1.95-.39 2.95-.39s2.01.13 2.95.39c2.22-1.51 3.19-1.2 3.19-1.2.64 1.65.24 2.87.12 3.17.76.82 1.21 1.86 1.21 3.14 0 4.51-2.73 5.5-5.34 5.79.42.36.8 1.08.8 2.18v3.23c0 .31.21.68.81.56A11.5 11.5 0 0 0 12 .5Z"></path></svg>
-                <text class="footer-link-label">GitHub</text>
             </view>
         </view>
     </view>
@@ -370,36 +329,31 @@
     
     <view id="alerts" class="alerts" aria-live="polite"></view>
 
-    <view id="modal-backdrop" class="modal-backdrop hidden" data-close="modal"></view>
+    <view id="modal-backdrop" class="modal-backdrop {{showBackdrop ? '' : 'hidden'}}" bindtap="closeModals"></view>
 
-    <view id="dictionary-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="dictionary-modal-title">
+    <view id="dictionary-modal" class="modal {{showDictionaryModal ? '' : 'hidden'}}" role="dialog" aria-modal="true" aria-labelledby="dictionary-modal-title">
         <view class="modal-header">
             <view id="dictionary-modal-title">辞書選択</view>
-            <button type="button" class="modal-close" data-close="modal" aria-label="閉じる">×</button>
+            <button type="button" class="modal-close" bindtap="closeModals" aria-label="閉じる">×</button>
         </view>
         <view class="modal-body dictionary-modal-body">
             <view class="dictionary-select-group">
-                <label for="dictionary-select">利用する辞書を選択</label>
-                <select id="dictionary-select"></select>
-            </view>
-            <view class="voice-selection">
-                <label for="voice-select">音声選択:</label>
-                <select id="voice-select">
-                    <option value="">読み込み中...</option>
-                </select>
-                <button type="button" id="voice-preview" class="ghost-button" title="選択中の音声で試聴します" aria-label="音声を試聴">▶︎ 試聴</button>
+                <text>利用する辞書を選択</text>
+                <picker mode="selector" range="{{dictNames}}" value="{{selectedDictIndex}}" bindchange="onDictPickerChange">
+                    <view class="picker-display">
+                        <text class="picker-value">{{dictNames[selectedDictIndex]}}</text>
+                        <text class="select-arrow">▾</text>
+                    </view>
+                </picker>
             </view>
             <view class="rate-control">
-                <label for="rate-slider">読み上げ速度:</label>
-                <view class="rate-control__track">
-                    <input id="rate-slider" type="range" min="0.5" max="2" step="0.1" value="1" />
-                    <text id="rate-value">1.0x</text>
-                </view>
+                <text>読み上げ速度:</text>
+                <slider min="0.5" max="2" step="0.1" value="{{speechRate}}" show-value bindchange="onRateChange" />
             </view>
         </view>
         <view class="modal-footer">
-            <button type="button" class="ghost-button" data-close="modal">キャンセル</button>
-            <button type="button" id="dictionary-save">確認</button>
+            <button type="button" class="ghost-button" bindtap="closeModals">キャンセル</button>
+            <button type="button" id="dictionary-save" bindtap="onDictionarySave">確認</button>
         </view>
     </view>
 
@@ -515,9 +469,7 @@
             </view>
             <view id="wrong-words-pagination" class="pagination hidden">
                 <button id="prev-page" class="pagination-btn" disabled>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="15 18 9 12 15 6"></polyline>
-                    </svg>
+                    <image src="../../static/icons/chevron-left.png" style="width:16px;height:16px" />
                     前へ
                 </button>
                 <view class="pagination-info">
@@ -525,9 +477,7 @@
                 </view>
                 <button id="next-page" class="pagination-btn" disabled>
                     次へ
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
+                    <image src="../../static/icons/chevron-right.png" style="width:16px;height:16px" />
                 </button>
             </view>
         </view>
@@ -593,9 +543,7 @@
             
             <view class="leaderboard-pagination" id="leaderboard-pagination" style="display: none;">
                 <button id="prev-leaderboard-page" class="pagination-btn" disabled>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="15 18 9 12 15 6"></polyline>
-                    </svg>
+                    <image src="../../static/icons/chevron-left.png" style="width:16px;height:16px" />
                     前へ
                 </button>
                 <view class="pagination-info">
@@ -603,9 +551,7 @@
                 </view>
                 <button id="next-leaderboard-page" class="pagination-btn" disabled>
                     次へ
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
+                    <image src="../../static/icons/chevron-right.png" style="width:16px;height:16px" />
                 </button>
             </view>
         </view>

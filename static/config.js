@@ -1,0 +1,21 @@
+module.exports = {
+    "dictionaries": [
+        { "path": "wrong-words", "name": "錯題本", "isWrongWords": true },
+        { "path": "dictionaries/confusing.json", "name": "紛らわしい仮名" },
+        { "path": "dictionaries/beginner.json", "name": "入門单字" },
+        { "path": "dictionaries/grammar.json", "name": "基本文法" },
+        { "path": "dictionaries/base.json", "name": "基本単語" },
+        { "path": "dictionaries/jlpt_n5.json", "name": "JLPT N5" },
+        { "path": "dictionaries/jlpt_n4.json", "name": "JLPT N4" },
+        { "path": "dictionaries/jlpt_n3.json", "name": "JLPT N3" },
+        { "path": "dictionaries/jlpt_n2.json", "name": "JLPT N2" },
+        { "path": "dictionaries/jlpt_n1.json", "name": "JLPT N1" },
+        { "path": "dictionaries/jlpt_all.json", "name": "JLPT 総合" },
+        { "path": "dictionaries/conversation.json", "name": "会話" },
+        { "path": "dictionaries/computer.json", "name": "コンピューター用語" },
+        { "path": "dictionaries/katakana.json", "name": "カタカナ地獄" }
+    ],
+    "default_dictionary": "dictionaries/base.json"
+};
+
+
