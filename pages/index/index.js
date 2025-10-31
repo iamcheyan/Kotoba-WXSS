@@ -186,14 +186,8 @@ Page({
       return;
     }
 
-    // 微信小程序没有原生TTS，使用第三方服务
-    // 方案1: Google TTS（免费但可能不稳定）
-    // 方案2: 百度/科大讯飞等TTS服务（需要后端API）
-    // 方案3: 使用预录音频文件（最佳性能，但需要预先准备）
-    
-    // 当前实现：使用 Google TTS
-    // 注意：需要在小程序后台配置 request 合法域名 translate.google.com
-    // 或在开发时设置 project.config.json 中 checkSiteDomain: false
+    // 使用 Google TTS API（免费，无需API密钥）
+    // 注意：实际项目中建议使用自己的TTS服务或后端API
     const ttsUrl = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=ja&client=tw-ob&q=' + encodeURIComponent(textToSpeak);
     
     // 如果已有音频实例，先停止
@@ -218,12 +212,9 @@ Page({
 
     this.audioContext.onError((err) => {
       console.error('[TTS] 播放错误:', err);
-      // Google TTS 可能被限制，提示用户
-      wx.showToast({ 
-        title: '音声再生に失敗しました。ネットワークを確認してください', 
-        icon: 'none',
-        duration: 2000
-      });
+      wx.showToast({ title: '音声再生に失敗しました', icon: 'none' });
+      // Google TTS 可能被限制，尝试备用方案
+      this.fallbackTTS(textToSpeak);
     });
 
     this.audioContext.onEnded(() => {
@@ -235,5 +226,15 @@ Page({
     });
 
     this.audioContext.play();
+  },
+
+  fallbackTTS(text) {
+    // 备用方案：提示用户或使用其他TTS服务
+    // 可以调用后端API或使用其他TTS提供商
+    wx.showToast({ 
+      title: 'TTSサービスを利用できません', 
+      icon: 'none',
+      duration: 2000
+    });
   }
 });
